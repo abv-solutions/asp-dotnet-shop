@@ -10,8 +10,8 @@ using Shop.Server.Entities;
 namespace Shop.Server.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20200808180631_InitialSchema")]
-    partial class InitialSchema
+    [Migration("20200809115232_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -296,7 +296,7 @@ namespace Shop.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Shop.Server.Entities.User", b =>
+            modelBuilder.Entity("Shop.Server.Entities.ShopUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -372,7 +372,7 @@ namespace Shop.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Shop.Server.Entities.User", null)
+                    b.HasOne("Shop.Server.Entities.ShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -381,7 +381,7 @@ namespace Shop.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Shop.Server.Entities.User", null)
+                    b.HasOne("Shop.Server.Entities.ShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -396,7 +396,7 @@ namespace Shop.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Shop.Server.Entities.User", null)
+                    b.HasOne("Shop.Server.Entities.ShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -405,7 +405,7 @@ namespace Shop.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Shop.Server.Entities.User", null)
+                    b.HasOne("Shop.Server.Entities.ShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

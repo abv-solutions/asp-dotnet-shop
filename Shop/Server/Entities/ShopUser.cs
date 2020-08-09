@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shop.Server.Entities
 {
-    public class User : IdentityUser
+    public class ShopUser : IdentityUser
     {
     }
 }

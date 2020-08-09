@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json.Serialization;
 using AutoMapper;
 using Shop.Server.Entities;
 using Shop.Server.Services;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 
 namespace Shop.Server
 {
@@ -31,6 +33,7 @@ namespace Shop.Server
                 .AddControllersWithViews()
                 .ConfigureApiBehaviorOptions(setupAction =>
                 {
+                    // Configure details for validation response
                     setupAction.InvalidModelStateResponseFactory = context =>
                     {
                         var problemDetails = new ValidationProblemDetails(context.ModelState)
@@ -65,12 +68,15 @@ namespace Shop.Server
                 .UseSqlServer(Configuration.GetConnectionString("ShopDB")));
 
             services
-                .AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddDefaultIdentity<ShopUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ShopDbContext>();
 
             services
                 .AddIdentityServer()
-                .AddApiAuthorization<User, ShopDbContext>();
+                .AddApiAuthorization<ShopUser, ShopDbContext>();
+
+            services.Configure<IdentityOptions>(options =>
+                options.ClaimsIdentity.UserIdClaimType = ClaimTypes.NameIdentifier);
 
             services
                 .AddAuthentication()

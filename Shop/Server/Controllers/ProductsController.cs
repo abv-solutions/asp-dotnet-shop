@@ -16,20 +16,26 @@ using Shop.Server.Models;
 using Shop.Server.Entities;
 using Shop.Server.Resources;
 using Shop.Server.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace Shop.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
+        private readonly UserManager<ShopUser> _userManager;
         private readonly IProductsRepository _repository;
         private readonly IMapper _mapper;
 
-        public ProductsController(IProductsRepository repository, IMapper mapper)
+        public ProductsController(
+            UserManager<ShopUser> userManager,
+            IProductsRepository repository, 
+            IMapper mapper)
         {
-            _repository = repository ?? throw new ArgumentNullException(nameof(repository)); ;
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -37,6 +43,9 @@ namespace Shop.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProducts([FromQuery] ProductsRouteParams resources)
         {
+            var user = await _userManager.GetUserAsync(User);
+            var email = user?.Email;
+
             var products = await _repository.GetProducts(resources);
             return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
         }

@@ -1,7 +1,8 @@
-@page "/fetchdata"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Components.WebAssembly.Authentication
 @using Shop.Shared.Models
+
+@page "/fetchdata"
 @attribute [Authorize]
 @inject HttpClient Http
 
@@ -43,7 +44,14 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        products = await Http.GetFromJsonAsync<IEnumerable<ProductDto>>("/api/products");
+        try
+        {
+            products = await Http.GetFromJsonAsync<IEnumerable<ProductDto>>("/api/products");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
     }
 
 }

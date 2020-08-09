@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Shop.Server.Entities
 {
-    public class ShopDbContext : ApiAuthorizationDbContext<User>
+    public class ShopDbContext : ApiAuthorizationDbContext<ShopUser>
     {
         public ShopDbContext(
             DbContextOptions options,
