@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
@@ -16,7 +17,6 @@ using Shop.Server.Models;
 using Shop.Server.Entities;
 using Shop.Server.Resources;
 using Shop.Server.Services;
-using Microsoft.AspNetCore.Identity;
 
 namespace Shop.Server.Controllers
 {
@@ -25,16 +25,16 @@ namespace Shop.Server.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly UserManager<ShopUser> _userManager;
+        private readonly Helpers _helpers;
         private readonly IProductsRepository _repository;
         private readonly IMapper _mapper;
 
         public ProductsController(
-            UserManager<ShopUser> userManager,
+            Helpers helpers,
             IProductsRepository repository, 
             IMapper mapper)
         {
-            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _helpers = helpers ?? throw new ArgumentNullException(nameof(helpers));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
@@ -43,22 +43,33 @@ namespace Shop.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProducts([FromQuery] ProductsRouteParams resources)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var email = user?.Email;
-
-            var products = await _repository.GetProducts(resources);
-            return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
+            try
+            {
+                var products = await _repository.GetProducts(resources);
+                return Ok(_mapper.Map<IEnumerable<ProductDto>>(products));
+            }
+            catch (Exception e)
+            {
+                return _helpers.ErrorResponse(e);
+            }
         }
 
         // Get one product
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct([FromRoute] int id)
         {
-            var product = await _repository.GetProduct(id);
+            try
+            {
+                var product = await _repository.GetProduct(id);
 
-            if (product == null) return NotFound();
+                if (product == null) return NotFound();
 
-            return Ok(_mapper.Map<ProductDto>(product));
+                return Ok(_mapper.Map<ProductDto>(product));
+            }
+            catch (Exception e)
+            {
+                return _helpers.ErrorResponse(e);
+            }
         }
 
         // Create a product
@@ -72,8 +83,9 @@ namespace Shop.Server.Controllers
                 _repository.AddProduct(product);
                 await _repository.Save();
 
-                return CreatedAtAction("GetProduct", new { id = product.Id },
-                        _mapper.Map<ProductDto>(product));
+                return CreatedAtAction("GetProduct",
+                    new { id = product.Id },
+                    _mapper.Map<ProductDto>(product));
             }
             catch (DbUpdateException e)
             {
@@ -82,7 +94,7 @@ namespace Shop.Server.Controllers
             }
             catch (Exception e)
             {
-                return ErrorResponse(e);
+                return _helpers.ErrorResponse(e);
             }
         }
 
@@ -109,7 +121,7 @@ namespace Shop.Server.Controllers
             }
             catch (Exception e)
             {
-                return ErrorResponse(e);
+                return _helpers.ErrorResponse(e);
             }
         }
 
@@ -145,7 +157,7 @@ namespace Shop.Server.Controllers
             }
             catch (Exception e)
             {
-                return ErrorResponse(e);
+                return _helpers.ErrorResponse(e);
             }
         }
 
@@ -171,11 +183,9 @@ namespace Shop.Server.Controllers
             }
             catch (Exception e)
             {
-                return ErrorResponse(e);
+                return _helpers.ErrorResponse(e);
             }
         }
-
-        // --- Helper functions ---
 
         // Set the defined Startup details for manual validation response
         public override ActionResult ValidationProblem(
@@ -185,27 +195,5 @@ namespace Shop.Server.Controllers
                 .GetRequiredService<IOptions<ApiBehaviorOptions>>();
             return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
-
-        // Sends error response
-        public JsonResult ErrorResponse(Exception e)
-        {
-            var problemDetails = new ProblemDetails()
-            {
-                Status = StatusCodes.Status400BadRequest,
-                Type = $"Database problem",
-                Title = $"A database error occurred.",
-                Detail = e.Message,
-                Instance = HttpContext.Request.Path
-            };
-
-            problemDetails.Extensions.Add("traceId", HttpContext.TraceIdentifier);
-
-            return new JsonResult(problemDetails)
-            {
-                StatusCode = StatusCodes.Status400BadRequest,
-                ContentType = "application/problem+json; charset=utf-8"
-            };
-        }
-
     }
 }

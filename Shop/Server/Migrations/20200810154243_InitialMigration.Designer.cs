@@ -10,7 +10,7 @@ using Shop.Server.Entities;
 namespace Shop.Server.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20200809115232_InitialMigration")]
+    [Migration("20200810154243_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,6 +238,90 @@ namespace Shop.Server.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Shop.Server.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "dummy address",
+                            Email = "andrei@gmail.com",
+                            Phone = "0040555444",
+                            Time = new DateTime(2020, 8, 10, 18, 42, 42, 789, DateTimeKind.Local).AddTicks(1088),
+                            Total = 22.9m
+                        });
+                });
+
+            modelBuilder.Entity("Shop.Server.Entities.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Amount = 2,
+                            OrderId = 1,
+                            Price = 12.95m,
+                            ProductId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Amount = 1,
+                            OrderId = 1,
+                            Price = 9.95m,
+                            ProductId = 2
+                        });
+                });
+
             modelBuilder.Entity("Shop.Server.Entities.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -408,6 +492,21 @@ namespace Shop.Server.Migrations
                     b.HasOne("Shop.Server.Entities.ShopUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Shop.Server.Entities.OrderItem", b =>
+                {
+                    b.HasOne("Shop.Server.Entities.Order", "Order")
+                        .WithMany("OrderItems")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Shop.Server.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

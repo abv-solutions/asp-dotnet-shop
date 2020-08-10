@@ -14,6 +14,5 @@ namespace Shop.Server.Entities
         public decimal Price { get; set; }
         public bool InStock { get; set; }
         public bool Favourite { get; set; }
-
     }
 }

@@ -64,6 +64,23 @@ namespace Shop.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Address = table.Column<string>(nullable: true),
+                    Phone = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Total = table.Column<decimal>(nullable: false),
+                    Time = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PersistedGrants",
                 columns: table => new
                 {
@@ -203,20 +220,58 @@ namespace Shop.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "OrderItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Amount = table.Column<int>(nullable: false),
+                    Price = table.Column<decimal>(nullable: false),
+                    OrderId = table.Column<int>(nullable: false),
+                    ProductId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "Id", "Description", "Favourite", "InStock", "Name", "Price" },
-                values: new object[] { 1, "Our famous apple!", false, true, "Apple", 12.95m });
+                table: "Orders",
+                columns: new[] { "Id", "Address", "Email", "Phone", "Time", "Total" },
+                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", new DateTime(2020, 8, 10, 18, 42, 42, 789, DateTimeKind.Local).AddTicks(1088), 22.9m });
 
             migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "Description", "Favourite", "InStock", "Name", "Price" },
-                values: new object[] { 2, "Our famous pear!", true, false, "Pear", 9.95m });
+                values: new object[,]
+                {
+                    { 1, "Our famous apple!", false, true, "Apple", 12.95m },
+                    { 2, "Our famous pear!", true, false, "Pear", 9.95m },
+                    { 3, "Our famous cheese!", false, true, "Cheese", 15.95m }
+                });
 
             migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "Id", "Description", "Favourite", "InStock", "Name", "Price" },
-                values: new object[] { 3, "Our famous cheese!", false, true, "Cheese", 15.95m });
+                table: "OrderItems",
+                columns: new[] { "Id", "Amount", "OrderId", "Price", "ProductId" },
+                values: new object[] { 1, 2, 1, 12.95m, 1 });
+
+            migrationBuilder.InsertData(
+                table: "OrderItems",
+                columns: new[] { "Id", "Amount", "OrderId", "Price", "ProductId" },
+                values: new object[] { 2, 1, 1, 9.95m, 2 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -269,6 +324,16 @@ namespace Shop.Server.Migrations
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_OrderId",
+                table: "OrderItems",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderItems_ProductId",
+                table: "OrderItems",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_Expiration",
                 table: "PersistedGrants",
                 column: "Expiration");
@@ -300,16 +365,22 @@ namespace Shop.Server.Migrations
                 name: "DeviceCodes");
 
             migrationBuilder.DropTable(
-                name: "PersistedGrants");
+                name: "OrderItems");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "PersistedGrants");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Products");
         }
     }
 }

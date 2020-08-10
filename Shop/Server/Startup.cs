@@ -14,6 +14,7 @@ using Newtonsoft.Json.Serialization;
 using AutoMapper;
 using Shop.Server.Entities;
 using Shop.Server.Services;
+using Newtonsoft.Json;
 
 namespace Shop.Server
 {
@@ -53,10 +54,10 @@ namespace Shop.Server
                         };
                     };
                 })
-                .AddNewtonsoftJson(setupAction =>
+                .AddNewtonsoftJson(options =>
                 {
-                    setupAction.SerializerSettings.ContractResolver =
-                       new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                 })
                 .AddXmlDataContractSerializerFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
@@ -82,9 +83,11 @@ namespace Shop.Server
                 .AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.AddScoped<IProductsRepository, ProductsRepository>();
-
+            services.AddHttpContextAccessor();
+            services.AddScoped<Helpers, Helpers>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddScoped<IProductsRepository, ProductsRepository>();
+            services.AddScoped<IOrdersRepository, OrdersRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
