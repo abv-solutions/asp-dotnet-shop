@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
@@ -41,7 +40,7 @@ namespace Shop.Server.Controllers
 
         // Get all products
         [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] ProductsRouteParams resources)
+        public async Task<IActionResult> GetProducts([FromQuery] ProductRouteParams resources)
         {
             try
             {

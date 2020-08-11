@@ -9,14 +9,14 @@
                     }
                     else
                     {
-                        <p>You are not authorized to access this resource.</p>
+                        <p class="text-center">You are not authorized to access this resource.</p>
                     }
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>
         <NotFound>
             <LayoutView Layout="@typeof(MainLayout)">
-                <p>Sorry, there's nothing at this address.</p>
+                <p class="text-center">Sorry, there's nothing at this address.</p>
             </LayoutView>
         </NotFound>
     </Router>

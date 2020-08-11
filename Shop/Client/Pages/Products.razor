@@ -1,0 +1,121 @@
+@using Shop.Shared.Models
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@page "/products"
+@inject IHttpClientFactory HttpClientFactory
+
+<div class="text-center">
+    <h1 class="display-4">Products List</h1>
+    <p class="lead">Check out our list of products. Feel free to order anything you want!</p>
+</div>
+
+@if (products == null && err == null)
+{
+    <p class="text-center">Loading...</p>
+}
+else if (err != null)
+{
+    <p class="text-center">Something went wrong...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>In stock</th>
+                <AuthorizeView>
+                    <Authorized>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </Authorized>
+                </AuthorizeView>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                    <td>@product.InStock</td>
+                    <AuthorizeView>
+                        <Authorized>
+                            <td>
+                                <button class="btn btn-sm btn-success" @onclick="IncrementCount">Add to cart</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-info" @onclick="IncrementCount">Edit</button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" @onclick="IncrementCount">Delete</button>
+                            </td>
+                        </Authorized>
+                    </AuthorizeView>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p>Current count: @currentCount</p>
+
+    <EditForm Model="testModel" OnValidSubmit="HandleValidSubmit">
+        <ServerValidator @ref="serverValidator" />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="testModel.Name" />
+
+        <button type="submit">Submit</button>
+
+    </EditForm>
+}
+
+@code {
+    private IEnumerable<ProductDto> products;
+    private Exception err = null;
+    private int currentCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var http = HttpClientFactory.CreateClient("Shop.PublicAPI");
+
+            products = await http.GetFromJsonAsync<IEnumerable<ProductDto>>("/api/products");
+            var a = products;
+        }
+        catch (Exception e)
+        {
+            err = e;
+        }
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private ProductDto testModel = new ProductDto()
+    { 
+        Name = "test productproductproductproductproductproductproductproductproductproductproductproductproduct"
+    };
+    private ServerValidator serverValidator;
+
+    private async void HandleValidSubmit()
+    {
+        var http = HttpClientFactory.CreateClient("Shop.PublicAPI");
+
+        var response = await http.PostAsJsonAsync<ProductDto>("/api/products", testModel);
+
+        if (response.StatusCode != System.Net.HttpStatusCode.Created)
+        {
+            var a = response;
+            serverValidator.Validate(response, testModel);
+        }
+    }
+}

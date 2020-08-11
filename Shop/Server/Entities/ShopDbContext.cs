@@ -22,6 +22,11 @@ namespace Shop.Server.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder
+                .Entity<Order>(entity => entity.HasCheckConstraint(
+                    "CK_Order_Status",
+                    "[Status] IN ('open', 'closed')"));
+
+            modelBuilder
                 .Entity<Product>()
                 .HasData(new Product
                 {
@@ -59,7 +64,8 @@ namespace Shop.Server.Entities
                     Address = "dummy address",
                     Phone = "0040555444",
                     Email = "andrei@gmail.com",
-                    Total = 22.9M,
+                    Status = "Open",
+                    Total = 99.65M,
                     Time = DateTime.Now
                 });
 
@@ -69,7 +75,7 @@ namespace Shop.Server.Entities
                 {
                     Id = 1,
                     OrderId = 1,
-                    Amount = 2,
+                    Amount = 4,
                     Price = 12.95M,
                     ProductId = 1
                 },
@@ -77,9 +83,9 @@ namespace Shop.Server.Entities
                 {
                     Id = 2,
                     OrderId = 1,
-                    Amount = 1,
+                    Amount = 3,
                     Price = 9.95M,
-                    ProductId = 2
+                    ProductId = 3
                 });
 
             base.OnModelCreating(modelBuilder);

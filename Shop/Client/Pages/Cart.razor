@@ -1,0 +1,73 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using Shop.Shared.Models
+@using System.Text.Json;
+
+@page "/cart"
+@attribute [Authorize]
+@inject HttpClient Http
+@inject AuthenticationStateProvider authProvider
+
+<div class="text-center">
+    <h1 class="display-4">Cart</h1>
+    <p class="lead">This is your cart. Verify the order items and finish your order.</p>
+</div>
+
+@if (order == null && err == null)
+{
+    <p class="text-center">Loading...</p>
+}
+else if (err != null)
+{
+    <p class="text-center">Something went wrong...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Amount</th>
+                <th>Order ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in order.OrderItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Price</td>
+                    <td>@item.Amount</td>
+                    <td>@item.OrderId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public OrderDto order;
+    private Exception err = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await authProvider.GetAuthenticationStateAsync();
+            var user = authState.User;
+
+            var orders = await Http.GetFromJsonAsync<IEnumerable<OrderDto>>($"/api/orders?email={user?.Identity?.Name}");
+
+            order = orders.FirstOrDefault();
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch (Exception e)
+        {
+            err = e;
+        }
+    }
+}

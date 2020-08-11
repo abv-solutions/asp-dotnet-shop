@@ -69,15 +69,17 @@ namespace Shop.Server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Address = table.Column<string>(nullable: true),
-                    Phone = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
+                    Address = table.Column<string>(maxLength: 255, nullable: false),
+                    Phone = table.Column<string>(maxLength: 25, nullable: false),
+                    Email = table.Column<string>(maxLength: 50, nullable: false),
+                    Status = table.Column<string>(nullable: false),
                     Total = table.Column<decimal>(nullable: false),
                     Time = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.CheckConstraint("CK_Order_Status", "[Status] IN ('open', 'closed')");
                 });
 
             migrationBuilder.CreateTable(
@@ -250,8 +252,8 @@ namespace Shop.Server.Migrations
 
             migrationBuilder.InsertData(
                 table: "Orders",
-                columns: new[] { "Id", "Address", "Email", "Phone", "Time", "Total" },
-                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", new DateTime(2020, 8, 10, 18, 42, 42, 789, DateTimeKind.Local).AddTicks(1088), 22.9m });
+                columns: new[] { "Id", "Address", "Email", "Phone", "Status", "Time", "Total" },
+                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", "Open", new DateTime(2020, 8, 11, 16, 36, 37, 34, DateTimeKind.Local).AddTicks(6212), 99.65m });
 
             migrationBuilder.InsertData(
                 table: "Products",
@@ -266,12 +268,12 @@ namespace Shop.Server.Migrations
             migrationBuilder.InsertData(
                 table: "OrderItems",
                 columns: new[] { "Id", "Amount", "OrderId", "Price", "ProductId" },
-                values: new object[] { 1, 2, 1, 12.95m, 1 });
+                values: new object[] { 1, 4, 1, 12.95m, 1 });
 
             migrationBuilder.InsertData(
                 table: "OrderItems",
                 columns: new[] { "Id", "Amount", "OrderId", "Price", "ProductId" },
-                values: new object[] { 2, 1, 1, 9.95m, 2 });
+                values: new object[] { 2, 3, 1, 9.95m, 3 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

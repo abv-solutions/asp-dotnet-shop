@@ -14,6 +14,12 @@ namespace Shop.Client
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("app");
 
+            // HttpClient without access tokens
+            builder.Services
+                .AddHttpClient("Shop.PublicAPI", client => 
+                    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
+            // Http client with access tokens
             builder.Services
                 .AddHttpClient("Shop.ServerAPI", client => 
                     client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))

@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Shop.Server.Resources;
+using Shop.Shared.Models;
 
-// Maps DB table
+// Maps API view - for creation
 
-namespace Shop.Server.Entities
+namespace Shop.Server.Models
 {
-    public class Order
-    {        
-        public int Id { get; set; }
-        [Required]
+    public class OrderChangeDto
+    {
         [MaxLength(255)]
         public string Address { get; set; }
-        [Required]
         [MaxLength(25)]
         public string Phone { get; set; }
-        [Required]
-        [MaxLength(50)]
+        [ShopReadOnly]
         public string Email { get; set; }
         [Required]
+        [Status]
         public string Status { get; set; }
-        public decimal Total { get; set; }
+        [ShopReadOnly]
+        public decimal? Total { get; set; }
         public DateTime Time { get; set; }
-        public List<OrderItem> OrderItems { get; set; }
+        public List<OrderItemChangeDto> OrderItems { get; set; }
     }
-
 }

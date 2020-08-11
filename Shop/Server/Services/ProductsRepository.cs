@@ -29,7 +29,7 @@ namespace Shop.Server.Services
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Product>> GetProducts(ProductsRouteParams resources)
+        public async Task<IEnumerable<Product>> GetProducts(ProductRouteParams resources)
         {
             bool search = false;
             var query = _context.Products as IQueryable<Product>;

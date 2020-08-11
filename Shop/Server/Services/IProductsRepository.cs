@@ -10,7 +10,7 @@ namespace Shop.Server.Services
     public interface IProductsRepository
     {
         Task<IEnumerable<Product>> GetProducts();
-        Task<IEnumerable<Product>> GetProducts(ProductsRouteParams resources);
+        Task<IEnumerable<Product>> GetProducts(ProductRouteParams resources);
         void AddProduct(Product product);
         void UpdateProduct(Product product);
         void DeleteProduct(Product product);

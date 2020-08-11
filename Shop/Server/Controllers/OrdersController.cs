@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -14,6 +15,7 @@ using Shop.Shared.Models;
 using Shop.Server.Models;
 using Shop.Server.Entities;
 using Shop.Server.Services;
+using System.Net.NetworkInformation;
 
 namespace Shop.Server.Controllers
 {
@@ -42,7 +44,7 @@ namespace Shop.Server.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // Get one order
+        // Get orders
         [HttpGet]
         public async Task<IActionResult> GetOrders([FromQuery] string email)
         {
@@ -52,7 +54,25 @@ namespace Shop.Server.Controllers
 
                 if (orders == null) return NotFound();
 
-                return Ok(orders);
+                return Ok(_mapper.Map<IEnumerable<OrderDto>>(orders));
+            }
+            catch (Exception e)
+            {
+                return _helpers.ErrorResponse(e);
+            }
+        }
+
+        // Get one order
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrder([FromRoute] int id)
+        {
+            try
+            {
+                var order = await _ordersRepository.GetOrder(id);
+
+                if (order == null) return NotFound();
+
+                return Ok(_mapper.Map<OrderDto>(order));
             }
             catch (Exception e)
             {
@@ -62,7 +82,7 @@ namespace Shop.Server.Controllers
 
         // Create an order
         [HttpPost]
-        public async Task<IActionResult> PostOrder([FromBody] Order order)
+        public async Task<IActionResult> PostOrder([FromBody] OrderChangeDto orderDto)
         {
             try
             {
@@ -71,13 +91,15 @@ namespace Shop.Server.Controllers
 
                 if (email != null)
                 {
+                    var order = _mapper.Map<Order>(orderDto);
+                    order.Email = email;
+
                     _ordersRepository.AddOrder(order);
                     await _ordersRepository.Save();
-
-                    foreach (var o in order.OrderItems)
-                        o.Product = await _productsRepository.GetProduct(o.ProductId);
-
-                    return CreatedAtAction("GetOrders", new { id = order.Id }, order);
+                                        
+                    return CreatedAtAction("GetOrder",
+                        new { id = order.Id },
+                        _mapper.Map<OrderDto>(order));
                 }
 
                 return Unauthorized();
@@ -85,7 +107,9 @@ namespace Shop.Server.Controllers
             }
             catch (DbUpdateException e)
             {
-                ModelState.AddModelError("database", e.InnerException.Message);
+                ModelState.AddModelError("database", e.InnerException != null
+                    ? e.InnerException.Message
+                    : e.Message);
                 return ValidationProblem();
             }
             catch (Exception e)

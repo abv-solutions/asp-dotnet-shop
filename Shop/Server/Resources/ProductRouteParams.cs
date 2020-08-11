@@ -4,7 +4,7 @@
 
 namespace Shop.Server.Resources
 {
-    public class ProductsRouteParams
+    public class ProductRouteParams
     {
         [MaxLength(25)]
         public string Name { get; set; }

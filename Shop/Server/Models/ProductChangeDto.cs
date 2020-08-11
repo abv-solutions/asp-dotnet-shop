@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Shop.Server.Resources;
 
 // Maps API view - for creation
@@ -12,8 +13,8 @@ namespace Shop.Server.Models
         [MaxLength(255)]
         public string Description { get; set; }
         public decimal Price { get; set; }        
-        public bool? InStock { get; set; }
-        [Favourite]
+        public bool InStock { get; set; }
+        [ShopReadOnly]
         public bool? Favourite { get; set; }
     }
 }

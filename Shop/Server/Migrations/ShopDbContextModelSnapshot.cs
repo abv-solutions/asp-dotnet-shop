@@ -244,12 +244,22 @@ namespace Shop.Server.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
 
                     b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)")
+                        .HasMaxLength(25);
+
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Time")
@@ -262,6 +272,8 @@ namespace Shop.Server.Migrations
 
                     b.ToTable("Orders");
 
+                    b.HasCheckConstraint("CK_Order_Status", "[Status] IN ('open', 'closed')");
+
                     b.HasData(
                         new
                         {
@@ -269,8 +281,9 @@ namespace Shop.Server.Migrations
                             Address = "dummy address",
                             Email = "andrei@gmail.com",
                             Phone = "0040555444",
-                            Time = new DateTime(2020, 8, 10, 18, 42, 42, 789, DateTimeKind.Local).AddTicks(1088),
-                            Total = 22.9m
+                            Status = "Open",
+                            Time = new DateTime(2020, 8, 11, 16, 36, 37, 34, DateTimeKind.Local).AddTicks(6212),
+                            Total = 99.65m
                         });
                 });
 
@@ -305,7 +318,7 @@ namespace Shop.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Amount = 2,
+                            Amount = 4,
                             OrderId = 1,
                             Price = 12.95m,
                             ProductId = 1
@@ -313,10 +326,10 @@ namespace Shop.Server.Migrations
                         new
                         {
                             Id = 2,
-                            Amount = 1,
+                            Amount = 3,
                             OrderId = 1,
                             Price = 9.95m,
-                            ProductId = 2
+                            ProductId = 3
                         });
                 });
 
