@@ -94,7 +94,7 @@ namespace Shop.Server.Controllers
                     var order = _mapper.Map<Order>(orderDto);
                     order.Email = email;
 
-                    _ordersRepository.AddOrder(order);
+                    await _ordersRepository.AddOrder(order);
                     await _ordersRepository.Save();
                                         
                     return CreatedAtAction("GetOrder",

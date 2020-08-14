@@ -10,7 +10,7 @@ namespace Shop.Server.Services
     {
         Task<IEnumerable<Order>> GetOrders(string email);
         Task<Order> GetOrder(int id);
-        void AddOrder(Order order);
+        Task AddOrder(Order order);
         Task<bool> Save();
     }
 }

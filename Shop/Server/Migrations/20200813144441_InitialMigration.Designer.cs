@@ -10,7 +10,7 @@ using Shop.Server.Entities;
 namespace Shop.Server.Migrations
 {
     [DbContext(typeof(ShopDbContext))]
-    [Migration("20200811133637_InitialMigration")]
+    [Migration("20200813144441_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -284,7 +284,7 @@ namespace Shop.Server.Migrations
                             Email = "andrei@gmail.com",
                             Phone = "0040555444",
                             Status = "Open",
-                            Time = new DateTime(2020, 8, 11, 16, 36, 37, 34, DateTimeKind.Local).AddTicks(6212),
+                            Time = new DateTime(2020, 8, 13, 17, 44, 40, 661, DateTimeKind.Local).AddTicks(4527),
                             Total = 99.65m
                         });
                 });
@@ -353,6 +353,7 @@ namespace Shop.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(25)")
                         .HasMaxLength(25);
 

@@ -1,19 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-// Maps DB table
+// Maps client view - for creation
 
-namespace Shop.Server.Entities
+namespace Shop.Client.Models
 {
-    public class Product
+    public class ProductChangeDto
     {
-        public int Id { get; set; }
         [Required]
         [MaxLength(25)]
         public string Name { get; set; }
         [MaxLength(255)]
         public string Description { get; set; }
-        public decimal Price { get; set; }
+        public decimal Price { get; set; }        
         public bool InStock { get; set; }
-        public bool Favourite { get; set; }
+        public bool? Favourite { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Shop.Client.Services;
 
 namespace Shop.Client
 {
@@ -15,14 +16,12 @@ namespace Shop.Client
             builder.RootComponents.Add<App>("app");
 
             // HttpClient without access tokens
-            builder.Services
-                .AddHttpClient("Shop.PublicAPI", client => 
-                    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+            builder.Services.AddHttpClient("Shop.PublicAPI", client => 
+                client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 
             // Http client with access tokens
-            builder.Services
-                .AddHttpClient("Shop.ServerAPI", client => 
-                    client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+            builder.Services.AddHttpClient("Shop.ServerAPI", client => 
+                client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
                 .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
 
             // Supply HttpClient instances that include access tokens when making requests to the server project
@@ -31,6 +30,9 @@ namespace Shop.Client
                 .CreateClient("Shop.ServerAPI"));
 
             builder.Services.AddApiAuthorization();
+
+            builder.Services.AddScoped<IProductsDataService, ProductsDataService>();
+            builder.Services.AddScoped<IOrdersDataService, OrdersDataService>();
 
             await builder.Build().RunAsync();
         }

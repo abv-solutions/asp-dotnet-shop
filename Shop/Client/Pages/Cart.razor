@@ -1,10 +1,6 @@
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
-@using Shop.Shared.Models
-@using System.Text.Json;
-
 @page "/cart"
 @attribute [Authorize]
+
 @inject HttpClient Http
 @inject AuthenticationStateProvider authProvider
 
@@ -15,11 +11,13 @@
 
 @if (order == null && err == null)
 {
-    <p class="text-center">Loading...</p>
+    <div class="text-center alert alert-info">
+        @(loading ? "Loading..." : "No active order")
+    </div>
 }
 else if (err != null)
 {
-    <p class="text-center">Something went wrong...</p>
+    <div class="text-center alert alert-danger">Something went wrong. @err</div>
 }
 else
 {
@@ -44,30 +42,4 @@ else
             }
         </tbody>
     </table>
-}
-
-@code {
-    public OrderDto order;
-    private Exception err = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var authState = await authProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-
-            var orders = await Http.GetFromJsonAsync<IEnumerable<OrderDto>>($"/api/orders?email={user?.Identity?.Name}");
-
-            order = orders.FirstOrDefault();
-        }
-        catch (AccessTokenNotAvailableException exception)
-        {
-            exception.Redirect();
-        }
-        catch (Exception e)
-        {
-            err = e;
-        }
-    }
 }

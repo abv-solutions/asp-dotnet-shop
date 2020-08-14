@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Shop.Server.Entities;
+using Microsoft.EntityFrameworkCore.Internal;
 
 // Implements interface methods for DB manipulation
 
@@ -24,7 +25,7 @@ namespace Shop.Server.Services
                 throw new ArgumentNullException(nameof(email));
 
             return await _context.Orders
-                .Where(o => o.Email == email)
+                .Where(o => o.Email == email && o.Status == "open")
                 .Include(o => o.OrderItems)
                 .ThenInclude(o => o.Product)
                 .AsNoTracking()
@@ -40,7 +41,7 @@ namespace Shop.Server.Services
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public void AddOrder(Order order)
+        public async Task AddOrder(Order order)
         {
             if (order == null)
                 throw new ArgumentNullException(nameof(order));
@@ -53,6 +54,17 @@ namespace Shop.Server.Services
                     ?? throw new DbUpdateException("One or more of the Product IDs provided are invalid");
                 o.Price = o.Amount * o.Product.Price;
                 order.Total += o.Price;
+            }
+            // Close any previously opened order for current user
+            if (order.Status == "open")
+            {
+                var orders = await _context.Orders
+                    .Where(o => o.Email == order.Email && o.Status == "open")
+                    .ToListAsync();
+
+                if (orders.Any())
+                    foreach (var o in orders)
+                        o.Status = "closed";
             }
 
             _context.Orders.Add(order);

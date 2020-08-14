@@ -1,0 +1,71 @@
+@using Shop.Client.Services
+
+@page "/editproduct"
+@page "/editproduct/{id}"
+@attribute [Authorize]
+
+<div class="text-center">
+    <h1 class="display-4">@(productId != 0 ? "Edit" : "Create") product</h1>
+    <p class="lead">Use this form to @(productId != 0 ? "edit" : "create") your product. Beware, any product requires at least a tiny bit of info!</p>
+</div>
+
+@if (product == null && err == null)
+{
+    <div class="text-center alert alert-info">Loading...</div>
+}
+else if (err != null)
+{
+    <div class="text-center alert alert-danger">Something went wrong. @err</div>
+}
+else
+{
+    <EditForm Model="product" OnValidSubmit="HandleValidSubmit" Class="col-lg-7 col-md-9 mx-auto py-3 border rounded">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <div>
+                        <InputText @bind-Value="product.Name" @onkeydown="() => serverValidator.Reset()" id="name" Class="form-control" />
+                        <ValidationMessage For="() => product.Name" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="price">Price</label>
+                <div>
+                    <InputNumber @bind-Value="product.Price" @onclick="() => serverValidator.Reset()" @onkeydown="() => serverValidator.Reset()" id="price" Class="form-control" />
+                    <ValidationMessage For="() => product.Price" />
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <div>
+                <InputText @bind-Value="product.Description" @onkeydown="() => serverValidator.Reset()" id="description" Class="form-control" />
+                <ValidationMessage For="() => product.Description" />
+            </div>
+        </div>
+
+        <div class="form-check">
+            <InputCheckbox @bind-Value="product.InStock" @onclick="() => serverValidator.Reset()" id="instock" Class="form-check-input" />
+            <label class="form-check-label" for="instock">In Stock</label>
+            <ValidationMessage For="() => product.InStock" />
+        </div>
+
+        <DataAnnotationsValidator />
+        <ServerValidator @ref="serverValidator" />
+
+        <div class="form-group text-center mb-3">
+            <button type="submit" class="btn btn-@(productId != 0 ? "info" : "success")">
+                <span class="oi oi-@(productId != 0 ? "check" : "plus") py-1" aria-hidden="true"></span>
+                @(productId != 0 ? " Edit" : " Create")
+            </button>
+        </div>
+
+        <hr />
+        <div class="text-center">
+            <ValidationSummary />
+        </div>
+    </EditForm>
+}

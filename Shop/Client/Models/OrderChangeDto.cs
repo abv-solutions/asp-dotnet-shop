@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Shop.Server.Resources;
+using Shop.Shared.Models;
 
-// Maps API view - for creation
+// Maps client view - for creation
 
-namespace Shop.Server.Models
+namespace Shop.Client.Models
 {
     public class OrderChangeDto
     {
@@ -15,13 +15,8 @@ namespace Shop.Server.Models
         [Required]
         [MaxLength(25)]
         public string Phone { get; set; }
-        [ShopReadOnly]
-        public string Email { get; set; }
         [Required]
-        [Status]
         public string Status { get; set; }
-        [ShopReadOnly]
-        public decimal? Total { get; set; }
-        public List<OrderItemChangeDto> OrderItems { get; set; }
+        public List<OrderItemDto> OrderItems { get; set; }
     }
 }

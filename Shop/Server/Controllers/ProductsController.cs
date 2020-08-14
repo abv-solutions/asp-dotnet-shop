@@ -107,7 +107,9 @@ namespace Shop.Server.Controllers
 
                 if (product == null) return NotFound();
 
+                productDto.Favourite = product.Favourite;
                 _mapper.Map(productDto, product);
+
                 _repository.UpdateProduct(product);
                 await _repository.Save();
 
@@ -141,9 +143,10 @@ namespace Shop.Server.Controllers
                 patchDoc.ApplyTo(productDto, ModelState);
 
                 if (!TryValidateModel(productDto)) return ValidationProblem();
-                productDto.Favourite = product.Favourite;
 
+                productDto.Favourite = product.Favourite;
                 _mapper.Map(productDto, product);
+
                 _repository.UpdateProduct(product);
                 await _repository.Save();
 

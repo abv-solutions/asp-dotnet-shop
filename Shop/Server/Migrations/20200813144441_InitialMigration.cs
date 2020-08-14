@@ -105,7 +105,7 @@ namespace Shop.Server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 25, nullable: true),
+                    Name = table.Column<string>(maxLength: 25, nullable: false),
                     Description = table.Column<string>(maxLength: 255, nullable: true),
                     Price = table.Column<decimal>(nullable: false),
                     InStock = table.Column<bool>(nullable: false),
@@ -253,7 +253,7 @@ namespace Shop.Server.Migrations
             migrationBuilder.InsertData(
                 table: "Orders",
                 columns: new[] { "Id", "Address", "Email", "Phone", "Status", "Time", "Total" },
-                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", "Open", new DateTime(2020, 8, 11, 16, 36, 37, 34, DateTimeKind.Local).AddTicks(6212), 99.65m });
+                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", "Open", new DateTime(2020, 8, 13, 17, 44, 40, 661, DateTimeKind.Local).AddTicks(4527), 99.65m });
 
             migrationBuilder.InsertData(
                 table: "Products",

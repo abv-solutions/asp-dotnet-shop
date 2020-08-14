@@ -11,10 +11,10 @@ namespace Shop.Server.Services
     {
         Task<IEnumerable<Product>> GetProducts();
         Task<IEnumerable<Product>> GetProducts(ProductRouteParams resources);
+        Task<Product> GetProduct(int id);
         void AddProduct(Product product);
         void UpdateProduct(Product product);
         void DeleteProduct(Product product);
-        Task<Product> GetProduct(int id);
         Task<bool> Save();
     }
 }
