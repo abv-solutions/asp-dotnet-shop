@@ -1,4 +1,4 @@
-﻿<div class="col-lg-4 col-md-6 d-flex mb-4">
+﻿<div class="col-xl-4 col-lg-6 d-flex mb-4">
     <div class="card flex-fill">
         <img class="card-img-top"
              src="@($"https://source.unsplash.com/random/242x160/?{(Product.Name)}")"
@@ -8,6 +8,10 @@
             <span class="badge badge-pill badge-@(Product.InStock ? "success" : "danger") float-right">
                 @(Product.InStock ? "In stock!" : "Not in stock")
             </span>
+            @if (Product.Favourite)
+            {
+                <span class="oi oi-star float-right text-warning mr-2" aria-hidden="true"></span>
+            }
             <h5 class="card-title">@Product.Name</h5>
             <p class="card-text">@Product.Description</p>
             <p><span class="oi oi-euro" aria-hidden="true"></span> @Product.Price</p>
@@ -16,14 +20,17 @@
         <AuthorizeView>
             <Authorized>
                 <div class="card-footer">
-                    <button class="btn btn-sm btn-success m-1">
-                        <span class="oi oi-cart" aria-hidden="true"></span> Add to cart
-                    </button>
+                    @if (Product.InStock)
+                    {
+                        <button @onclick="() => AddOrderItem(Product)" disabled="@loading" class="btn btn-sm btn-success m-1">
+                            <span class="oi oi-cart" aria-hidden="true"></span> Add to cart
+                        </button>
+                    }
                     <div class="float-right m-1">
                         <a href="@($"editproduct/{Product.Id.ToString()}")" class="btn btn-sm btn-info">
                             <span class="oi oi-check" aria-hidden="true"></span> Edit
                         </a>
-                        <button class="btn btn-sm btn-danger" @onclick="() => Delete(Product.Id)">
+                        <button @onclick="() => Delete(Product.Id)" disabled="@loading" class="btn btn-sm btn-danger">
                             <span class="oi oi-x" aria-hidden="true"></span> Delete
                         </button>
                     </div>

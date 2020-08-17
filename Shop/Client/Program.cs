@@ -31,6 +31,8 @@ namespace Shop.Client
 
             builder.Services.AddApiAuthorization();
 
+            builder.Services.AddSingleton<State>();
+            builder.Services.AddSingleton<Helpers>();
             builder.Services.AddScoped<IProductsDataService, ProductsDataService>();
             builder.Services.AddScoped<IOrdersDataService, OrdersDataService>();
 

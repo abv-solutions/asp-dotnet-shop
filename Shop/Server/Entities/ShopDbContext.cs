@@ -64,7 +64,7 @@ namespace Shop.Server.Entities
                     Address = "dummy address",
                     Phone = "0040555444",
                     Email = "andrei@gmail.com",
-                    Status = "Open",
+                    Status = "open",
                     Total = 99.65M,
                     Time = DateTime.Now
                 });

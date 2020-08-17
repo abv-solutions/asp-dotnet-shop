@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Shop.Client.Models;
+using Shop.Client.Resources;
 using Shop.Shared.Models;
 
 // Implements interface methods for model manipulation
@@ -26,6 +27,11 @@ namespace Shop.Client.Services
         {
             return await _publicHttp.GetFromJsonAsync<IEnumerable<ProductDto>>("/api/products");
         }
+        public async Task<IEnumerable<ProductDto>> GetProducts(ProductRouteParams p)
+        {
+            return await _publicHttp.GetFromJsonAsync<IEnumerable<ProductDto>>
+                ($"/api/products?name={p.Name}&description={p.Description}&instock={p.InStock}&favourite={p.Favourite}");
+        }
 
         public async Task<ProductChangeDto> GetProduct(int id)
         {
@@ -34,13 +40,11 @@ namespace Shop.Client.Services
 
         public async Task<HttpResponseMessage> AddProduct(ProductChangeDto product)
         {
-            product.Favourite = null;
             return await _secureHttp.PostAsJsonAsync("/api/products", product);
         }
 
         public async Task<HttpResponseMessage> UpdateProduct(int id, ProductChangeDto product)
         {
-            product.Favourite = null;
             return await _secureHttp.PutAsJsonAsync($"/api/products/{id}", product);
         }
 

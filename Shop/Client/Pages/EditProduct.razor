@@ -1,56 +1,44 @@
-@using Shop.Client.Services
-
 @page "/editproduct"
 @page "/editproduct/{id}"
 @attribute [Authorize]
+
+<SetCart @ref="setCart"/>
 
 <div class="text-center">
     <h1 class="display-4">@(productId != 0 ? "Edit" : "Create") product</h1>
     <p class="lead">Use this form to @(productId != 0 ? "edit" : "create") your product. Beware, any product requires at least a tiny bit of info!</p>
 </div>
 
-@if (product == null && err == null)
+@if (product == null && state.err.message == null)
 {
     <div class="text-center alert alert-info">Loading...</div>
 }
-else if (err != null)
+else if (state.err.message != null)
 {
-    <div class="text-center alert alert-danger">Something went wrong. @err</div>
+    <div class="text-center alert alert-danger">Something went wrong. @state.err.message</div>
 }
 else
 {
     <EditForm Model="product" OnValidSubmit="HandleValidSubmit" Class="col-lg-7 col-md-9 mx-auto py-3 border rounded">
         <div class="form-row">
             <div class="form-group col-md-6">
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <div>
-                        <InputText @bind-Value="product.Name" @onkeydown="() => serverValidator.Reset()" id="name" Class="form-control" />
-                        <ValidationMessage For="() => product.Name" />
-                    </div>
-                </div>
+                <label for="name">Name</label>
+                <InputText @bind-Value="product.Name" @onkeydown="() => serverValidator.Reset()" id="name" Class="form-control" />
             </div>
             <div class="form-group col-md-6">
                 <label for="price">Price</label>
-                <div>
-                    <InputNumber @bind-Value="product.Price" @onclick="() => serverValidator.Reset()" @onkeydown="() => serverValidator.Reset()" id="price" Class="form-control" />
-                    <ValidationMessage For="() => product.Price" />
-                </div>
+                <InputNumber @bind-Value="product.Price" @onclick="() => serverValidator.Reset()" @onkeydown="() => serverValidator.Reset()" id="price" Class="form-control" />
             </div>
         </div>
 
         <div class="form-group">
             <label for="description">Description</label>
-            <div>
-                <InputText @bind-Value="product.Description" @onkeydown="() => serverValidator.Reset()" id="description" Class="form-control" />
-                <ValidationMessage For="() => product.Description" />
-            </div>
+            <InputText @bind-Value="product.Description" @onkeydown="() => serverValidator.Reset()" id="description" Class="form-control" />
         </div>
 
         <div class="form-check">
             <InputCheckbox @bind-Value="product.InStock" @onclick="() => serverValidator.Reset()" id="instock" Class="form-check-input" />
             <label class="form-check-label" for="instock">In Stock</label>
-            <ValidationMessage For="() => product.InStock" />
         </div>
 
         <DataAnnotationsValidator />
@@ -63,7 +51,6 @@ else
             </button>
         </div>
 
-        <hr />
         <div class="text-center">
             <ValidationSummary />
         </div>

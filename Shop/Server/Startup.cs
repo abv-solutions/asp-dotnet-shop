@@ -84,10 +84,11 @@ namespace Shop.Server
                 .AddIdentityServerJwt();
 
             services.AddHttpContextAccessor();
-            services.AddScoped<Helpers, Helpers>();
+            services.AddScoped<Helpers>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IProductsRepository, ProductsRepository>();
             services.AddScoped<IOrdersRepository, OrdersRepository>();
+            services.AddScoped<IOrderItemsRepository, OrderItemsRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -253,7 +253,7 @@ namespace Shop.Server.Migrations
             migrationBuilder.InsertData(
                 table: "Orders",
                 columns: new[] { "Id", "Address", "Email", "Phone", "Status", "Time", "Total" },
-                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", "Open", new DateTime(2020, 8, 13, 17, 44, 40, 661, DateTimeKind.Local).AddTicks(4527), 99.65m });
+                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", "open", new DateTime(2020, 8, 15, 9, 59, 45, 932, DateTimeKind.Local).AddTicks(2500), 99.65m });
 
             migrationBuilder.InsertData(
                 table: "Products",

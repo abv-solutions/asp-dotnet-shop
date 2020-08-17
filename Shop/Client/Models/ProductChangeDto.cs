@@ -13,6 +13,5 @@ namespace Shop.Client.Models
         public string Description { get; set; }
         public decimal Price { get; set; }        
         public bool InStock { get; set; }
-        public bool? Favourite { get; set; }
     }
 }

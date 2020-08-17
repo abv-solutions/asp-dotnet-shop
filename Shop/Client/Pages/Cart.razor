@@ -1,45 +1,95 @@
 @page "/cart"
 @attribute [Authorize]
 
-@inject HttpClient Http
-@inject AuthenticationStateProvider authProvider
+<SetCart @ref="setCart" />
 
 <div class="text-center">
     <h1 class="display-4">Cart</h1>
     <p class="lead">This is your cart. Verify the order items and finish your order.</p>
 </div>
 
-@if (order == null && err == null)
+@if (state.order == null && state.err.message == null)
 {
-    <div class="text-center alert alert-info">
-        @(loading ? "Loading..." : "No active order")
+    <div class="text-center alert alert-info">No active order</div>
+}
+else if (!state.order.OrderItems.Any() && state.err.message == null)
+{
+    <div class="text-center alert alert-@(ordered ? "success" : "info")">
+        @(ordered ? "Your order is complete. Enjoy your products!"
+            : "There are no items in your order")
     </div>
 }
-else if (err != null)
+else if (state.err.message != null)
 {
-    <div class="text-center alert alert-danger">Something went wrong. @err</div>
+    <div class="text-center alert alert-danger">Something went wrong. @state.err.message</div>
 }
 else
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Amount</th>
-                <th>Order ID</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in order.OrderItems)
-            {
-                <tr>
-                    <td>@item.Product.Name</td>
-                    <td>@item.Price</td>
-                    <td>@item.Amount</td>
-                    <td>@item.OrderId</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-lg-7 col-md-9 border mx-auto">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in state.order.OrderItems)
+                    {
+                        <tr>
+                            <td>@item.Product.Name</td>
+                            <td>@item.Price</td>
+                            <td style="width: 10%">
+                                <input @bind-value="item.Amount" @onclick="() => UpdateAmount(item)" disabled="@loading" type="number" min="1" id="amount" Class="form-control" onkeydown="return false" />
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>Total:</td>
+                        <td>@state.order.Total</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="text-center my-3">
+        <button @onclick="() => ToggleOrderForm()" type="submit" class="btn btn-info">
+            <span class="oi oi-cart py-1" aria-hidden="true"></span>
+            Finalize order
+        </button>
+    </div>
+
+    if (showOrderForm)
+    {
+        <EditForm Model="order" OnValidSubmit="HandleValidSubmit" Class="col-lg-7 col-md-9 mx-auto mb-4 py-3 border rounded">
+            <div class="form-group">
+                <label for="address">Address</label>
+                <InputText @bind-Value="order.Address" @onkeydown="() => serverValidator.Reset()" id="address" Class="form-control" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-check-label" for="phone">Phone</label>
+                <InputText @bind-Value="order.Phone" @onkeydown="() => serverValidator.Reset()" id="phone" Class="form-control" />
+            </div>
+
+            <DataAnnotationsValidator />
+            <ServerValidator @ref="serverValidator" />
+
+            <div class="form-group text-center mb-3">
+                <button type="submit" class="btn btn-success">
+                    <span class="oi oi-check py-1" aria-hidden="true"></span>
+                    Send
+                </button>
+            </div>
+
+            <div class="text-center">
+                <ValidationSummary/>
+            </div>
+        </EditForm>
+    }
 }

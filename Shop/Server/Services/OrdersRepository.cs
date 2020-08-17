@@ -27,7 +27,7 @@ namespace Shop.Server.Services
             return await _context.Orders
                 .Where(o => o.Email == email && o.Status == "open")
                 .Include(o => o.OrderItems)
-                .ThenInclude(o => o.Product)
+                .ThenInclude(i => i.Product)
                 .AsNoTracking()
                 .ToListAsync();
         }
@@ -36,8 +36,7 @@ namespace Shop.Server.Services
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                .ThenInclude(o => o.Product)
-                .AsNoTracking()
+                .ThenInclude(i => i.Product)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
@@ -47,28 +46,23 @@ namespace Shop.Server.Services
                 throw new ArgumentNullException(nameof(order));
 
             order.Time = DateTime.Now;
+            await CalculatePrices(order);
 
-            foreach (var o in order.OrderItems)
-            {
-                o.Product = _context.Products.Find(o.ProductId)
-                    ?? throw new DbUpdateException("One or more of the Product IDs provided are invalid");
-                o.Price = o.Amount * o.Product.Price;
-                order.Total += o.Price;
-            }
-            // Close any previously opened order for current user
             if (order.Status == "open")
-            {
-                var orders = await _context.Orders
-                    .Where(o => o.Email == order.Email && o.Status == "open")
-                    .ToListAsync();
-
-                if (orders.Any())
-                    foreach (var o in orders)
-                        o.Status = "closed";
-            }
+                await CloseOrders(order);
 
             _context.Orders.Add(order);
         }
+
+        public async Task UpdateOrder(Order order)
+        {
+            if (order == null)
+                throw new ArgumentNullException(nameof(order));
+
+            order.Time = DateTime.Now;
+            await CalculatePrices(order);
+        }
+
         public async Task<bool> Save()
         {
             try
@@ -79,6 +73,33 @@ namespace Shop.Server.Services
             {
                 throw;
             }
+        }
+
+        // Calculate the prices and total
+        private async Task CalculatePrices(Order order)
+        {
+            foreach (var item in order.OrderItems)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId)
+                    ?? throw new DbUpdateException("One or more of the Product IDs provided are invalid");
+                if (!product.InStock)
+                    throw new DbUpdateException("One or more of the Products are no longer in stock");
+
+                item.Price = item.Amount * product.Price;
+                order.Total += item.Price;
+            }
+        }
+
+        // Close any previously opened order for current user
+        private async Task CloseOrders(Order order)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.Email == order.Email && o.Status == "open")
+                .ToListAsync();
+
+            if (orders.Any())
+                foreach (var o in orders)
+                    o.Status = "closed";
         }
     }
 }

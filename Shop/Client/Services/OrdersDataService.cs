@@ -28,7 +28,21 @@ namespace Shop.Client.Services
 
         public async Task<HttpResponseMessage> AddOrder(OrderChangeDto order)
         {
-            throw new NotImplementedException();
+            return await _secureHttp.PostAsJsonAsync("/api/orders", order);
+        }
+        public async Task<HttpResponseMessage> UpdateOrder(string id, OrderChangeDto order)
+        {
+            return await _secureHttp.PutAsJsonAsync($"/api/orders/{id}", order);
+        }
+
+        public async Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto orderItem)
+        {
+            return await _secureHttp.PostAsJsonAsync("/api/orderitems", orderItem);
+        }
+
+        public async Task<HttpResponseMessage> UpdateOrderItem(string id, OrderItemChangeDto orderItem)
+        {
+            return await _secureHttp.PutAsJsonAsync($"/api/orderitems/{id}", orderItem);
         }
     }
 }

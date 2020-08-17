@@ -19,7 +19,6 @@ using Shop.Server.Services;
 
 namespace Shop.Server.Controllers
 {
-    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
@@ -72,6 +71,7 @@ namespace Shop.Server.Controllers
         }
 
         // Create a product
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> PostProduct([FromBody] ProductChangeDto productDto)
         {
@@ -98,6 +98,7 @@ namespace Shop.Server.Controllers
         }
 
         // Update a product
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct([FromRoute] int id, [FromBody] ProductChangeDto productDto)
         {
@@ -128,6 +129,7 @@ namespace Shop.Server.Controllers
 
         // Patch a product
         [HttpPatch("{id}")]
+        [Authorize]
         public async Task<IActionResult> PatchProduct(
             [FromRoute] int id,
             [FromBody] JsonPatchDocument<ProductChangeDto> patchDoc)
@@ -164,6 +166,7 @@ namespace Shop.Server.Controllers
         }
 
         // Delete a product
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct([FromRoute] int id)
         {

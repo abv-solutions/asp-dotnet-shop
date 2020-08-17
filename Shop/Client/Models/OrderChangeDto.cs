@@ -17,6 +17,6 @@ namespace Shop.Client.Models
         public string Phone { get; set; }
         [Required]
         public string Status { get; set; }
-        public List<OrderItemDto> OrderItems { get; set; }
+        public List<OrderItemChangeDto> OrderItems { get; set; }
     }
 }

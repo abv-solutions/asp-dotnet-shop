@@ -2,27 +2,64 @@
 
 @page "/products"
 
+<SetCart @ref="setCart" />
+
 <div class="text-center">
     <h1 class="display-4">Products List</h1>
     <p class="lead">Check out our list of products. Feel free to order anything you want!</p>
 </div>
 
-@if (products.Count == 0 && err == null)
+@if (!unfilteredProducts.Any() && state.err.message == null)
 {
     <div class="text-center alert alert-info">
         @(loading ? "Loading..." : "There are no products in store")
     </div>
 }
-else if (err != null)
+else if (state.err.message != null)
 {
-    <div class="text-center alert alert-danger">Something went wrong. @err</div>
+    <div class="text-center alert alert-danger">Something went wrong. @state.err.message</div>
 }
 else
 {
+    <EditForm Model="product" OnValidSubmit="Search" Class="col-lg-8 mx-auto mb-3">
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                <InputText @bind-Value="product.Name" id="name" Class="form-control" placeholder="Name" />
+            </div>
+            <div class="form-group col-md-3">
+                <InputText @bind-Value="product.Description" id="description" Class="form-control" placeholder="Description" />
+            </div>
+            <div class="col-md-3">
+                <div class="form-check form-check-inline">
+                    <InputCheckbox @bind-Value="inStock" id="instock" Class="form-check-input" />
+                    <label class="form-check-label" for="instock">In Stock</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-check form-check-inline">
+                    <InputCheckbox @bind-Value="favourite" id="favourite" Class="form-check-input" />
+                    <label class="form-check-label" for="favourite">Favourite</label>
+                </div>
+            </div>
+        </div>
+
+        <DataAnnotationsValidator />
+
+        <div class="form-group text-center mb-3">
+            <button type="submit" class="btn btn-success">
+                <span class="oi oi-magnifying-glass py-1" aria-hidden="true"></span> Search
+            </button>
+        </div>
+
+        <div class="text-center">
+            <ValidationSummary />
+        </div>
+    </EditForm>
+
     <div class="row">
-            @foreach (var product in products)
-            {
-                <ProductCard Product="product" DeleteEventCallback="Delete" />
-            }
+        @foreach (var product in products)
+        {
+            <ProductCard Product="product" loading="loading" AddOrderItemEventCallback="AddOrderItem" DeleteEventCallback="Delete" />
+        }
     </div>
 }

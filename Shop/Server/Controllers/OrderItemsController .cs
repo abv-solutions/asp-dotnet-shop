@@ -20,54 +20,33 @@ namespace Shop.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class OrdersController : ControllerBase
+    public class OrderItemsController : ControllerBase
     {
         private readonly Helpers _helpers;
-        private readonly UserManager<ShopUser> _userManager;
-        private readonly IOrdersRepository _repository;
+        private readonly IOrderItemsRepository _repository;
         private readonly IMapper _mapper;
 
-        public OrdersController(
+        public OrderItemsController(
             Helpers helpers,
-            UserManager<ShopUser> userManager,
-            IOrdersRepository repository,
+            IOrderItemsRepository repository, 
             IMapper mapper)
         {
             _helpers = helpers ?? throw new ArgumentNullException(nameof(helpers));
-            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // Get orders
-        [HttpGet]
-        public async Task<IActionResult> GetOrders([FromQuery] string email)
-        {
-            try
-            {
-                var orders = await _repository.GetOrders(email);
-
-                if (orders == null) return NotFound();
-
-                return Ok(_mapper.Map<IEnumerable<OrderDto>>(orders));
-            }
-            catch (Exception e)
-            {
-                return _helpers.ErrorResponse(e);
-            }
-        }
-
-        // Get one order
+        // Get one order item
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetOrder([FromRoute] int id)
+        public async Task<IActionResult> GetOrderItem([FromRoute] int id)
         {
             try
             {
-                var order = await _repository.GetOrder(id);
+                var item = await _repository.GetOrderItem(id);
 
-                if (order == null) return NotFound();
+                if (item == null) return NotFound();
 
-                return Ok(_mapper.Map<OrderDto>(order));
+                return Ok(_mapper.Map<OrderItemDto>(item));
             }
             catch (Exception e)
             {
@@ -75,30 +54,21 @@ namespace Shop.Server.Controllers
             }
         }
 
-        // Create an order
+        // Create an order item
         [Authorize]
         [HttpPost]
-        public async Task<IActionResult> PostOrder([FromBody] OrderChangeDto orderDto)
+        public async Task<IActionResult> PostOrderItem([FromBody] OrderItemChangeDto itemDto)
         {
             try
             {
-                var user = await _userManager.GetUserAsync(User);
-                var email = user?.Email;
+                var item = _mapper.Map<OrderItem>(itemDto);
 
-                if (email != null)
-                {
-                    var order = _mapper.Map<Order>(orderDto);
-                    order.Email = email;
+                var order = await _repository.AddOrderItem(item);
+                await _repository.Save();
 
-                    await _repository.AddOrder(order);
-                    await _repository.Save();
-                                        
-                    return CreatedAtAction("GetOrder",
-                        new { id = order.Id },
-                        _mapper.Map<OrderDto>(order));
-                }
-
-                return Unauthorized();
+                return CreatedAtAction("GetOrder",
+                    new { controller = "orders", id = item.OrderId },
+                    _mapper.Map<OrderDto>(order));
             }
             catch (DbUpdateException e)
             {
@@ -113,21 +83,20 @@ namespace Shop.Server.Controllers
             }
         }
 
-        // Update an order
+        // Update an order item
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrder([FromRoute] int id, [FromBody] OrderChangeDto orderDto)
+        public async Task<IActionResult> PutOrderItem([FromRoute] int id, [FromBody] OrderItemChangeDto itemDto)
         {
             try
             {
-                var order = await _repository.GetOrder(id);
+                var item = await _repository.GetOrderItem(id);
 
-                if (order == null) return NotFound();
+                if (item == null) return NotFound();
 
-                orderDto.Email = order.Email;
-                _mapper.Map(orderDto, order);
+                _mapper.Map(itemDto, item);
 
-                await _repository.UpdateOrder(order);
+                await _repository.UpdateOrderItem(item);
                 await _repository.Save();
 
                 return NoContent();

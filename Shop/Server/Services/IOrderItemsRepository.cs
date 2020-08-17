@@ -6,12 +6,11 @@ using Shop.Server.Entities;
 
 namespace Shop.Server.Services
 {
-    public interface IOrdersRepository
+    public interface IOrderItemsRepository
     {
-        Task<IEnumerable<Order>> GetOrders(string email);
-        Task<Order> GetOrder(int id);
-        Task AddOrder(Order order);
-        Task UpdateOrder(Order order);
+        Task<OrderItem> GetOrderItem(int id);
+        Task<Order> AddOrderItem(OrderItem item);
+        Task UpdateOrderItem(OrderItem item);
         Task<bool> Save();
     }
 }

@@ -74,6 +74,23 @@ namespace Shop.Server.Services
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
+
+            var items = _context.OrderItems
+                .Where(i => i.ProductId == product.Id)
+                .ToList();
+
+            foreach (var item in items)
+            {
+                var newPrice = item.Amount * product.Price;
+
+                var orders = _context.Orders
+                    .Where(o => o.Id == item.OrderId && o.Status == "open");
+
+                foreach (var order in orders)
+                    order.Total = order.Total - item.Price + newPrice;
+
+                item.Price = newPrice;
+            }
         }
 
         public void DeleteProduct(Product product)

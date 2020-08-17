@@ -28,20 +28,15 @@
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="cart">
                         <span class="oi oi-cart" aria-hidden="true"></span> Cart
+                        @if (state.order?.OrderItems?.Count() > 0)
+                        {
+                            <span class="badge badge-pill badge-info ml-2">
+                                @state.order?.OrderItems?.Count()
+                            </span>
+                        }
                     </NavLink>
                 </li>
             </Authorized>
         </AuthorizeView>
     </ul>
 </div>
-
-@code {
-    private bool collapseNavMenu = true;
-
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
-}

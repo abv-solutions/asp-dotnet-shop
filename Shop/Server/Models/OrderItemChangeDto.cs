@@ -10,6 +10,7 @@ namespace Shop.Server.Models
         public int Amount { get; set; }
         [ShopReadOnly]
         public decimal? Price { get; set; }
+        public int OrderId { get; set; }
         public int ProductId { get; set; }
     }
 }
