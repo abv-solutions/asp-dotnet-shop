@@ -14,7 +14,7 @@ namespace Shop.Client.Pages
     public partial class Cart : IDisposable
     {
         [Inject]
-        private State state { get; set; }
+        private State _state { get; set; }
         [Inject]
         private Helpers _helpers { get; set; }
         [Inject]
@@ -29,7 +29,7 @@ namespace Shop.Client.Pages
 
         protected override void OnInitialized()
         {
-            state.OnChange += StateHasChanged;
+            _state.OnChange += StateHasChanged;
         }
 
         private async void UpdateOrderItem(OrderItemDto item)
@@ -57,7 +57,7 @@ namespace Shop.Client.Pages
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
 
             loading = false;
@@ -85,7 +85,7 @@ namespace Shop.Client.Pages
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
 
             loading = false;
@@ -96,11 +96,11 @@ namespace Shop.Client.Pages
         {
             order = new OrderChangeDto()
             {
-                Address = state.order.Address,
-                Phone = state.order.Phone,
+                Address = _state.order.Address,
+                Phone = _state.order.Phone,
                 Status = "closed",
                 OrderItems = JsonSerializer.Deserialize<List<OrderItemChangeDto>>(
-                    JsonSerializer.Serialize<List<OrderItemDto>>(state.order.OrderItems))
+                    JsonSerializer.Serialize<List<OrderItemDto>>(_state.order.OrderItems))
             };
 
             showOrderForm = !showOrderForm;
@@ -131,16 +131,16 @@ namespace Shop.Client.Pages
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
         }
 
         public void Dispose()
         {
-            state.OnChange -= StateHasChanged;
+            _state.OnChange -= StateHasChanged;
 
-            if (!state.err.critical)
-                state.err.message = null;
+            if (!_state.err.critical)
+                _state.err.message = null;
         }
     }
 }

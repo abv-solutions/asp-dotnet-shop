@@ -9,15 +9,15 @@
     <p class="lead">Check out our list of products. Feel free to order anything you want!</p>
 </div>
 
-@if (!unfilteredProducts.Any() && state.err.message == null)
+@if (!unfilteredProducts.Any() && _state.err.message == null)
 {
     <div class="text-center alert alert-info">
         @(loading ? "Loading..." : "There are no products in store")
     </div>
 }
-else if (state.err.message != null)
+else if (_state.err.message != null)
 {
-    <div class="text-center alert alert-danger">Something went wrong. @state.err.message</div>
+    <div class="text-center alert alert-danger">Something went wrong. @_state.err.message</div>
 }
 else
 {

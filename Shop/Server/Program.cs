@@ -16,8 +16,8 @@ namespace Shop.Server
             {
                 var context = scope.ServiceProvider.GetService<ShopDbContext>();
 
-                //context.Database.EnsureDeleted();
-                //context.Database.Migrate();
+                context.Database.EnsureDeleted();
+                context.Database.Migrate();
             }
 
             host.Run();

@@ -9,13 +9,13 @@
     <p class="lead">Use this form to @(productId != 0 ? "edit" : "create") your product. Beware, any product requires at least a tiny bit of info!</p>
 </div>
 
-@if (product == null && state.err.message == null)
+@if (product == null && _state.err.message == null)
 {
     <div class="text-center alert alert-info">Loading...</div>
 }
-else if (state.err.message != null)
+else if (_state.err.message != null)
 {
-    <div class="text-center alert alert-danger">Something went wrong. @state.err.message</div>
+    <div class="text-center alert alert-danger">Something went wrong. @_state.err.message</div>
 }
 else
 {

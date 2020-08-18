@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Shop.Server.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class DatabaseMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -251,29 +251,17 @@ namespace Shop.Server.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "Orders",
-                columns: new[] { "Id", "Address", "Email", "Phone", "Status", "Time", "Total" },
-                values: new object[] { 1, "dummy address", "andrei@gmail.com", "0040555444", "open", new DateTime(2020, 8, 15, 9, 59, 45, 932, DateTimeKind.Local).AddTicks(2500), 99.65m });
-
-            migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "Description", "Favourite", "InStock", "Name", "Price" },
                 values: new object[,]
                 {
-                    { 1, "Our famous apple!", false, true, "Apple", 12.95m },
-                    { 2, "Our famous pear!", true, false, "Pear", 9.95m },
-                    { 3, "Our famous cheese!", false, true, "Cheese", 15.95m }
+                    { 1, "Our famous apple!", true, true, "Apple", 12.95m },
+                    { 2, "Our famous pear!", false, false, "Pear", 9.95m },
+                    { 3, "Our famous cheese!", true, true, "Cheese", 15.95m },
+                    { 4, "Our famous meat!", true, false, "Meat", 21.95m },
+                    { 5, "Our famous blueberry!", false, true, "Blueberry", 5.95m },
+                    { 6, "Our famous bread!", true, false, "Bread", 18.95m }
                 });
-
-            migrationBuilder.InsertData(
-                table: "OrderItems",
-                columns: new[] { "Id", "Amount", "OrderId", "Price", "ProductId" },
-                values: new object[] { 1, 4, 1, 12.95m, 1 });
-
-            migrationBuilder.InsertData(
-                table: "OrderItems",
-                columns: new[] { "Id", "Amount", "OrderId", "Price", "ProductId" },
-                values: new object[] { 2, 3, 1, 9.95m, 3 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

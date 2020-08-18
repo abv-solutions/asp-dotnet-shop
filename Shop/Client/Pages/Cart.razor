@@ -10,20 +10,20 @@
     <p class="lead">This is your cart. Verify the order items and finish your order.</p>
 </div>
 
-@if (state.order == null && state.err.message == null)
+@if (_state.order == null && _state.err.message == null)
 {
     <div class="text-center alert alert-info">No active order</div>
 }
-else if (!state.order.OrderItems.Any() && state.err.message == null)
+else if (!_state.order.OrderItems.Any() && _state.err.message == null)
 {
     <div class="text-center alert alert-@(ordered ? "success" : "info")">
         @(ordered ? "Your order is complete. Enjoy your products!"
             : "There are no items in your order")
     </div>
 }
-else if (state.err.message != null)
+else if (_state.err.message != null)
 {
-    <div class="text-center alert alert-danger">Something went wrong. @state.err.message</div>
+    <div class="text-center alert alert-danger">Something went wrong. @_state.err.message</div>
 }
 else
 {
@@ -40,7 +40,7 @@ else
                 </thead>
 
                 <tbody>
-                    @foreach (var item in state.order.OrderItems)
+                    @foreach (var item in _state.order.OrderItems)
                     {
                         <tr>
                             <td>@item.Product.Name</td>
@@ -58,7 +58,7 @@ else
                     }
                     <tr>
                         <td>Total:</td>
-                        <td>@state.order.Total</td>
+                        <td>@_state.order.Total</td>
                         <td></td>
                         <td></td>
                     </tr>

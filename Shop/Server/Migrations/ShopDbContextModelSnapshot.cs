@@ -273,18 +273,6 @@ namespace Shop.Server.Migrations
                     b.ToTable("Orders");
 
                     b.HasCheckConstraint("CK_Order_Status", "[Status] IN ('open', 'closed')");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Address = "dummy address",
-                            Email = "andrei@gmail.com",
-                            Phone = "0040555444",
-                            Status = "open",
-                            Time = new DateTime(2020, 8, 15, 9, 59, 45, 932, DateTimeKind.Local).AddTicks(2500),
-                            Total = 99.65m
-                        });
                 });
 
             modelBuilder.Entity("Shop.Server.Entities.OrderItem", b =>
@@ -313,24 +301,6 @@ namespace Shop.Server.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("OrderItems");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Amount = 4,
-                            OrderId = 1,
-                            Price = 12.95m,
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Amount = 3,
-                            OrderId = 1,
-                            Price = 9.95m,
-                            ProductId = 3
-                        });
                 });
 
             modelBuilder.Entity("Shop.Server.Entities.Product", b =>
@@ -367,7 +337,7 @@ namespace Shop.Server.Migrations
                         {
                             Id = 1,
                             Description = "Our famous apple!",
-                            Favourite = false,
+                            Favourite = true,
                             InStock = true,
                             Name = "Apple",
                             Price = 12.95m
@@ -376,7 +346,7 @@ namespace Shop.Server.Migrations
                         {
                             Id = 2,
                             Description = "Our famous pear!",
-                            Favourite = true,
+                            Favourite = false,
                             InStock = false,
                             Name = "Pear",
                             Price = 9.95m
@@ -385,10 +355,37 @@ namespace Shop.Server.Migrations
                         {
                             Id = 3,
                             Description = "Our famous cheese!",
-                            Favourite = false,
+                            Favourite = true,
                             InStock = true,
                             Name = "Cheese",
                             Price = 15.95m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "Our famous meat!",
+                            Favourite = true,
+                            InStock = false,
+                            Name = "Meat",
+                            Price = 21.95m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Description = "Our famous blueberry!",
+                            Favourite = false,
+                            InStock = true,
+                            Name = "Blueberry",
+                            Price = 5.95m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Description = "Our famous bread!",
+                            Favourite = true,
+                            InStock = false,
+                            Name = "Bread",
+                            Price = 18.95m
                         });
                 });
 

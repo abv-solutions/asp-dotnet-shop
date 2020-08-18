@@ -12,8 +12,8 @@ namespace Shop.Client.Services
         Task<OrderDto> GetOrder(string name);
         Task<HttpResponseMessage> AddOrder(OrderChangeDto order);
         Task<HttpResponseMessage> UpdateOrder(int id, OrderChangeDto order);
-        Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto orderItem);
-        Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto orderItem);
+        Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto item);
+        Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto item);
         Task<HttpResponseMessage> DeleteOrderItem(int id);
     }
 }

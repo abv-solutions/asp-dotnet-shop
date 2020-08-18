@@ -9,7 +9,7 @@ namespace Shop.Client.Components
     public partial class SendOrder
     {
         [Inject]
-        private State state { get; set; }
+        private State _state { get; set; }
         [Inject]
         private IOrdersDataService _ordersDataService { get; set; }
 
@@ -22,7 +22,7 @@ namespace Shop.Client.Components
 
         private async Task HandleValidSubmit()
         {
-            var res = await _ordersDataService.UpdateOrder(state.order.Id, Order);
+            var res = await _ordersDataService.UpdateOrder(_state.order.Id, Order);
 
             await UpdateOrderEventCallback.InvokeAsync(res);
         }

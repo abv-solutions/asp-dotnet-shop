@@ -35,14 +35,14 @@ namespace Shop.Client.Services
             return await _secureHttp.PutAsJsonAsync($"/api/orders/{id}", order);
         }
 
-        public async Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto orderItem)
+        public async Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto item)
         {
-            return await _secureHttp.PostAsJsonAsync("/api/orderitems", orderItem);
+            return await _secureHttp.PostAsJsonAsync("/api/orderitems", item);
         }
 
-        public async Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto orderItem)
+        public async Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto item)
         {
-            return await _secureHttp.PutAsJsonAsync($"/api/orderitems/{id}", orderItem);
+            return await _secureHttp.PutAsJsonAsync($"/api/orderitems/{id}", item);
         }
 
         public async Task<HttpResponseMessage> DeleteOrderItem(int id)

@@ -76,6 +76,11 @@ namespace Shop.Server.Services
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
+            var order = _context.Orders.FirstOrDefault(o => o.Id == item.OrderId)
+                ?? throw new DbUpdateException("The provided Order ID is invalid");
+
+            order.Total -= item.Price;
+
             _context.OrderItems.Remove(item);
         }
 

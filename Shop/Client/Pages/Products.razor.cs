@@ -15,7 +15,7 @@ namespace Shop.Client.Pages
     public partial class Products: IDisposable
     {
         [Inject]
-        private State state { get; set; }
+        private State _state { get; set; }
         [Inject]
         private Helpers _helpers { get; set; }
         [Inject]
@@ -32,14 +32,14 @@ namespace Shop.Client.Pages
         {
             try
             {
-                state.OnChange += StateHasChanged;
+                _state.OnChange += StateHasChanged;
 
                 unfilteredProducts = await _productsDataService.GetProducts();
                 products = unfilteredProducts;
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
 
             loading = false;
@@ -61,7 +61,7 @@ namespace Shop.Client.Pages
                     var orderItem = new OrderItemChangeDto()
                     {
                         Amount = 1,
-                        OrderId = state.order.Id,
+                        OrderId = _state.order.Id,
                         ProductId = product.Id
 
                     };
@@ -70,7 +70,7 @@ namespace Shop.Client.Pages
 
                     // Success
                     if (res.StatusCode == System.Net.HttpStatusCode.Created)
-                        state.order = JsonSerializer.Deserialize<OrderDto>(
+                        _state.order = JsonSerializer.Deserialize<OrderDto>(
                             await res.Content.ReadAsStringAsync(),
                             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
                     // Error
@@ -84,7 +84,7 @@ namespace Shop.Client.Pages
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
 
             loading = false;
@@ -103,6 +103,7 @@ namespace Shop.Client.Pages
                 if (res.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
                     products = products.Where(p => p.Id != id);
+                    unfilteredProducts = unfilteredProducts.Where(p => p.Id != id);
                     await setCart.GetOrder();
                 }
                 // Error
@@ -115,7 +116,7 @@ namespace Shop.Client.Pages
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
 
             loading = false;
@@ -124,10 +125,10 @@ namespace Shop.Client.Pages
 
         public void Dispose()
         {
-            state.OnChange -= StateHasChanged;
+            _state.OnChange -= StateHasChanged;
 
-            if (!state.err.critical)
-                state.err.message = null;
+            if (!_state.err.critical)
+                _state.err.message = null;
         }
     }
 }

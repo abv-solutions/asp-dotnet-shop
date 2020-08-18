@@ -1,34 +1,19 @@
-﻿using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using Shop.Shared.Models;
 
-// Defines DB context
-
-namespace Shop.Server.Entities
+namespace Shop.Client.Services
 {
-    public class ShopDbContext : ApiAuthorizationDbContext<ShopUser>
+    public class MockShopDbContext
     {
-        public ShopDbContext(
-            DbContextOptions options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions)
-            : base(options, operationalStoreOptions) { }
+        public List<ProductDto> products { get; set; }
+        public OrderDto order { get; set; }
 
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public MockShopDbContext()
         {
-            modelBuilder
-                .Entity<Order>(entity => entity.HasCheckConstraint(
-                    "CK_Order_Status",
-                    "[Status] IN ('open', 'closed')"));
-
-            modelBuilder
-                .Entity<Product>()
-                .HasData(new Product
+            products = new List<ProductDto>()
+            {
+                new ProductDto
                 {
                     Id = 1,
                     Name = "Apple",
@@ -37,7 +22,7 @@ namespace Shop.Server.Entities
                     InStock = true,
                     Favourite = true
                 },
-                new Product
+                new ProductDto
                 {
                     Id = 2,
                     Name = "Pear",
@@ -46,7 +31,7 @@ namespace Shop.Server.Entities
                     InStock = false,
                     Favourite = false
                 },
-                new Product
+                new ProductDto
                 {
                     Id = 3,
                     Name = "Cheese",
@@ -55,7 +40,7 @@ namespace Shop.Server.Entities
                     InStock = true,
                     Favourite = true
                 },
-                new Product
+                new ProductDto
                 {
                     Id = 4,
                     Name = "Meat",
@@ -64,7 +49,7 @@ namespace Shop.Server.Entities
                     InStock = false,
                     Favourite = true
                 },
-                new Product
+                new ProductDto
                 {
                     Id = 5,
                     Name = "Blueberry",
@@ -73,7 +58,7 @@ namespace Shop.Server.Entities
                     InStock = true,
                     Favourite = false
                 },
-                new Product
+                new ProductDto
                 {
                     Id = 6,
                     Name = "Bread",
@@ -81,10 +66,17 @@ namespace Shop.Server.Entities
                     Description = "Our famous bread!",
                     InStock = false,
                     Favourite = true
-                });
-
-
-            base.OnModelCreating(modelBuilder);
+                }
+            };
+            order = new OrderDto()
+            {
+                Id = 1,
+                Address = "-",
+                Phone = "-",
+                Status = "open",
+                Time = DateTime.Now,
+                OrderItems = new List<OrderItemDto>()
+            };
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Shop.Client.Pages
     public partial class EditProduct : IDisposable
     {
         [Inject]
-        private State state { get; set; }
+        private State _state { get; set; }
         [Inject]
         private Helpers _helpers { get; set; }
         [Inject]
@@ -31,7 +31,7 @@ namespace Shop.Client.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            state.OnChange += StateHasChanged;
+            _state.OnChange += StateHasChanged;
 
             int.TryParse(id, out productId);
 
@@ -43,7 +43,7 @@ namespace Shop.Client.Pages
                 }
                 catch (Exception e)
                 {
-                    state.err = new Error(e.Message, false);
+                    _state.err = new Error(e.Message, false);
                 }
             }
         }
@@ -63,7 +63,7 @@ namespace Shop.Client.Pages
                 if (res.StatusCode == System.Net.HttpStatusCode.Created ||
                     res.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
-                    var item = state.order.OrderItems
+                    var item = _state.order.OrderItems
                         .Where(o => o.ProductId == productId)
                         .FirstOrDefault();
 
@@ -87,15 +87,15 @@ namespace Shop.Client.Pages
             }
             catch (Exception e)
             {
-                state.err = new Error(e.Message, false);
+                _state.err = new Error(e.Message, false);
             }
         }
         public void Dispose()
         {
-            state.OnChange -= StateHasChanged;
+            _state.OnChange -= StateHasChanged;
 
-            if (!state.err.critical)
-                state.err.message = null;
+            if (!_state.err.critical)
+                _state.err.message = null;
         }
     }
 }
