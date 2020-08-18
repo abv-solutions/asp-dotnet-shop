@@ -11,6 +11,7 @@ namespace Shop.Server.Services
         Task<OrderItem> GetOrderItem(int id);
         Task<Order> AddOrderItem(OrderItem item);
         Task UpdateOrderItem(OrderItem item);
+        void DeleteOrderItem(OrderItem item);
         Task<bool> Save();
     }
 }

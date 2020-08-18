@@ -71,6 +71,14 @@ namespace Shop.Server.Services
             CalculateTotal(order);
         }
 
+        public void DeleteOrderItem(OrderItem item)
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            _context.OrderItems.Remove(item);
+        }
+
         // Check order and item info
         private async Task<Order> CheckOrder(OrderItem item)
         {

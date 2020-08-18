@@ -24,12 +24,9 @@ namespace Shop.Client.Pages
         private IOrdersDataService _ordersDataService { get; set; }
 
         private SetCart setCart { get; set; }
-        private ProductRouteParams product { get; set; } = new ProductRouteParams();
         private IEnumerable<ProductDto> unfilteredProducts { get; set; } = new List<ProductDto>();
         private IEnumerable<ProductDto> products { get; set; } = new List<ProductDto>();
         private bool loading { get; set; } = true;
-        private bool inStock { get; set; }
-        private bool favourite { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -48,11 +45,8 @@ namespace Shop.Client.Pages
             loading = false;
         }
 
-        private async Task Search()
+        private async Task SearchProduct(ProductRouteParams product)
         {
-            product.InStock = inStock ? true : (bool?)null;
-            product.Favourite = favourite ? true : (bool?)null;
-
             products = await _productsDataService.GetProducts(product);
         }
 
@@ -97,7 +91,7 @@ namespace Shop.Client.Pages
             StateHasChanged();
         }
 
-        private async void Delete(int id)
+        private async void DeleteProduct(int id)
         {
             loading = true;
 

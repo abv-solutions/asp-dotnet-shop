@@ -21,45 +21,14 @@ else if (state.err.message != null)
 }
 else
 {
-    <EditForm Model="product" OnValidSubmit="Search" Class="col-lg-8 mx-auto mb-3">
-        <div class="form-row">
-            <div class="form-group col-md-3">
-                <InputText @bind-Value="product.Name" id="name" Class="form-control" placeholder="Name" />
-            </div>
-            <div class="form-group col-md-3">
-                <InputText @bind-Value="product.Description" id="description" Class="form-control" placeholder="Description" />
-            </div>
-            <div class="col-md-3">
-                <div class="form-check form-check-inline">
-                    <InputCheckbox @bind-Value="inStock" id="instock" Class="form-check-input" />
-                    <label class="form-check-label" for="instock">In Stock</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="form-check form-check-inline">
-                    <InputCheckbox @bind-Value="favourite" id="favourite" Class="form-check-input" />
-                    <label class="form-check-label" for="favourite">Favourite</label>
-                </div>
-            </div>
-        </div>
-
-        <DataAnnotationsValidator />
-
-        <div class="form-group text-center mb-3">
-            <button type="submit" class="btn btn-success">
-                <span class="oi oi-magnifying-glass py-1" aria-hidden="true"></span> Search
-            </button>
-        </div>
-
-        <div class="text-center">
-            <ValidationSummary />
-        </div>
-    </EditForm>
+    <SearchComponent SearchProductEventCallback="SearchProduct" />
 
     <div class="row">
         @foreach (var product in products)
         {
-            <ProductCard Product="product" loading="loading" AddOrderItemEventCallback="AddOrderItem" DeleteEventCallback="Delete" />
+            <ProductCard Product="product" loading="loading" 
+                         AddOrderItemEventCallback="AddOrderItem" 
+                         DeleteProductEventCallback="DeleteProduct" />
         }
     </div>
 }

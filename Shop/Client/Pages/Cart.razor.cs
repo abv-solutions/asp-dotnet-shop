@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Shop.Client.Models;
@@ -30,7 +32,7 @@ namespace Shop.Client.Pages
             state.OnChange += StateHasChanged;
         }
 
-        private async void UpdateAmount(OrderItemDto item)
+        private async void UpdateOrderItem(OrderItemDto item)
         {
             loading = true;
 
@@ -39,7 +41,7 @@ namespace Shop.Client.Pages
                 var updateItem = JsonSerializer.Deserialize<OrderItemChangeDto>(
                     JsonSerializer.Serialize<OrderItemDto>(item));
 
-                var res = await _ordersDataService.UpdateOrderItem(item.Id.ToString(), updateItem);
+                var res = await _ordersDataService.UpdateOrderItem(item.Id, updateItem);
 
                 // Success
                 if (res.StatusCode == System.Net.HttpStatusCode.NoContent)
@@ -62,12 +64,52 @@ namespace Shop.Client.Pages
             StateHasChanged();
         }
 
-        private async void HandleValidSubmit()
+        private async Task DeleteOrderItem(int id)
+        {
+            loading = true;
+
+            try
+            {
+                var res = await _ordersDataService.DeleteOrderItem(id);
+
+                // Success
+                if (res.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    await setCart.GetOrder();
+                // Error
+                else
+                    await _helpers.ErrorResponse(res);
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+            catch (Exception e)
+            {
+                state.err = new Error(e.Message, false);
+            }
+
+            loading = false;
+            StateHasChanged();
+        }
+
+        private void ToggleOrderForm()
+        {
+            order = new OrderChangeDto()
+            {
+                Address = state.order.Address,
+                Phone = state.order.Phone,
+                Status = "closed",
+                OrderItems = JsonSerializer.Deserialize<List<OrderItemChangeDto>>(
+                    JsonSerializer.Serialize<List<OrderItemDto>>(state.order.OrderItems))
+            };
+
+            showOrderForm = !showOrderForm;
+        }
+
+        private async void UpdateOrder(HttpResponseMessage res)
         {
             try
             {
-                var res = await _ordersDataService.UpdateOrder(state.order.Id.ToString(), order);
-
                 // Success
                 if (res.StatusCode == System.Net.HttpStatusCode.NoContent)
                 {
@@ -91,20 +133,6 @@ namespace Shop.Client.Pages
             {
                 state.err = new Error(e.Message, false);
             }
-        }
-
-        private void ToggleOrderForm()
-        {
-            order = new OrderChangeDto()
-            {
-                Address = state.order.Address,
-                Phone = state.order.Phone,
-                Status = "closed",
-                OrderItems = JsonSerializer.Deserialize<List<OrderItemChangeDto>>(
-                    JsonSerializer.Serialize<List<OrderItemDto>>(state.order.OrderItems))
-            };
-
-            showOrderForm = !showOrderForm;
         }
 
         public void Dispose()

@@ -30,7 +30,7 @@ namespace Shop.Client.Services
         {
             return await _secureHttp.PostAsJsonAsync("/api/orders", order);
         }
-        public async Task<HttpResponseMessage> UpdateOrder(string id, OrderChangeDto order)
+        public async Task<HttpResponseMessage> UpdateOrder(int id, OrderChangeDto order)
         {
             return await _secureHttp.PutAsJsonAsync($"/api/orders/{id}", order);
         }
@@ -40,9 +40,14 @@ namespace Shop.Client.Services
             return await _secureHttp.PostAsJsonAsync("/api/orderitems", orderItem);
         }
 
-        public async Task<HttpResponseMessage> UpdateOrderItem(string id, OrderItemChangeDto orderItem)
+        public async Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto orderItem)
         {
             return await _secureHttp.PutAsJsonAsync($"/api/orderitems/{id}", orderItem);
+        }
+
+        public async Task<HttpResponseMessage> DeleteOrderItem(int id)
+        {
+            return await _secureHttp.DeleteAsync($"/api/orderitems/{id}");
         }
     }
 }

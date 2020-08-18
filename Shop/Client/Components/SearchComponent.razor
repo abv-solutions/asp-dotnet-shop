@@ -1,0 +1,33 @@
+﻿<EditForm Model="product" OnValidSubmit="HandleValidSubmit" Class="col-xl-9 col-lg-10 col-md-11 mx-auto py-3 mb-3 border rounded">
+    <div class="form-row">
+        <div class="form-group col-xl-2 col-lg-3 my-1">
+            <InputText @bind-Value="product.Name" id="name" Class="form-control" placeholder="Name" />
+        </div>
+        <div class="form-group col-xl-4 col-lg-3 my-1">
+            <InputText @bind-Value="product.Description" id="description" Class="form-control" placeholder="Description" />
+        </div>
+        <div class="col-xl-2 col-lg-3">
+            <div class="form-check form-check-inline">
+                <InputCheckbox @bind-Value="inStock" id="instock" Class="form-check-input" />
+                <label class="form-check-label" for="instock">In Stock</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <InputCheckbox @bind-Value="favourite" id="favourite" Class="form-check-input" />
+                <label class="form-check-label" for="favourite">Favourite</label>
+            </div>
+        </div>
+        <div class="col-xl-4 col-lg-3">
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-success">
+                    <span class="oi oi-magnifying-glass py-1" aria-hidden="true"></span> Search
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <DataAnnotationsValidator />
+
+    <div class="text-center">
+        <ValidationSummary />
+    </div>
+</EditForm>

@@ -1,3 +1,5 @@
+@using Shop.Client.Components
+
 @page "/cart"
 @attribute [Authorize]
 
@@ -33,6 +35,7 @@ else
                         <th>Name</th>
                         <th>Price</th>
                         <th>Amount</th>
+                        <th></th>
                     </tr>
                 </thead>
 
@@ -43,13 +46,20 @@ else
                             <td>@item.Product.Name</td>
                             <td>@item.Price</td>
                             <td style="width: 10%">
-                                <input @bind-value="item.Amount" @onclick="() => UpdateAmount(item)" disabled="@loading" type="number" min="1" id="amount" Class="form-control" onkeydown="return false" />
+                                <input @bind-value="item.Amount" @onclick="() => UpdateOrderItem(item)" disabled="@loading" type="number" min="1" id="amount" Class="form-control" onkeydown="return false" />
+                            </td>
+                            <td>
+                                <a @onclick="() => DeleteOrderItem(item.Id)"
+                                   style="cursor: pointer;"
+                                   class="oi oi-x text-danger float-right py-2"
+                                   aria-hidden="true"></a>
                             </td>
                         </tr>
                     }
                     <tr>
                         <td>Total:</td>
                         <td>@state.order.Total</td>
+                        <td></td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -66,30 +76,6 @@ else
 
     if (showOrderForm)
     {
-        <EditForm Model="order" OnValidSubmit="HandleValidSubmit" Class="col-lg-7 col-md-9 mx-auto mb-4 py-3 border rounded">
-            <div class="form-group">
-                <label for="address">Address</label>
-                <InputText @bind-Value="order.Address" @onkeydown="() => serverValidator.Reset()" id="address" Class="form-control" />
-            </div>
-
-            <div class="form-group">
-                <label class="form-check-label" for="phone">Phone</label>
-                <InputText @bind-Value="order.Phone" @onkeydown="() => serverValidator.Reset()" id="phone" Class="form-control" />
-            </div>
-
-            <DataAnnotationsValidator />
-            <ServerValidator @ref="serverValidator" />
-
-            <div class="form-group text-center mb-3">
-                <button type="submit" class="btn btn-success">
-                    <span class="oi oi-check py-1" aria-hidden="true"></span>
-                    Send
-                </button>
-            </div>
-
-            <div class="text-center">
-                <ValidationSummary/>
-            </div>
-        </EditForm>
+        <SendOrder Order="order" UpdateOrderEventCallback="UpdateOrder" />
     }
 }

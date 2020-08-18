@@ -8,7 +8,7 @@ namespace Shop.Client.Components
         [Parameter]
         public ProductDto Product { get; set; }
         [Parameter]
-        public EventCallback<int> DeleteEventCallback { get; set; }
+        public EventCallback<int> DeleteProductEventCallback { get; set; }
         [Parameter]
         public EventCallback<ProductDto> AddOrderItemEventCallback { get; set; }
         [Parameter]
@@ -16,7 +16,7 @@ namespace Shop.Client.Components
 
         private async void Delete(int id)
         {
-            await DeleteEventCallback.InvokeAsync(id);
+            await DeleteProductEventCallback.InvokeAsync(id);
         }
         private async void AddOrderItem(ProductDto product)
         {

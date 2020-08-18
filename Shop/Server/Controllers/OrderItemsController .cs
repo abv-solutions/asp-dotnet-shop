@@ -114,6 +114,33 @@ namespace Shop.Server.Controllers
             }
         }
 
+        // Delete a product
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrderItem([FromRoute] int id)
+        {
+            try
+            {
+                var item = await _repository.GetOrderItem(id);
+
+                if (item == null) return NotFound();
+
+                _repository.DeleteOrderItem(item);
+                await _repository.Save();
+
+                return NoContent();
+            }
+            catch (DbUpdateException e)
+            {
+                ModelState.AddModelError("database", e.InnerException.Message);
+                return ValidationProblem();
+            }
+            catch (Exception e)
+            {
+                return _helpers.ErrorResponse(e);
+            }
+        }
+
         // Set the defined Startup details for manual validation response
         public override ActionResult ValidationProblem(
             [ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
