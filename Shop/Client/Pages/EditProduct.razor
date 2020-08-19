@@ -1,7 +1,8 @@
 @page "/editproduct"
 @page "/editproduct/{id}"
+@attribute [Authorize]
 
-<SetCart @ref="setCart"/>
+<SetCart @ref="setCart" />
 
 <div class="text-center">
     <h1 class="display-4">@(productId != 0 ? "Edit" : "Create") product</h1>
