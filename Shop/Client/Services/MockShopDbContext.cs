@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components;
 using Shop.Shared.Models;
 
 namespace Shop.Client.Services
 {
     public class MockShopDbContext
     {
+        private ILocalStorageService _localStorage { get; set; }
         public List<ProductDto> products { get; set; }
         public OrderDto order { get; set; }
 
-        public MockShopDbContext()
+        public MockShopDbContext(ILocalStorageService localStorage)
         {
             products = new List<ProductDto>()
             {
@@ -77,6 +81,38 @@ namespace Shop.Client.Services
                 Time = DateTime.Now,
                 OrderItems = new List<OrderItemDto>()
             };
+
+            _localStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
+        }
+
+        public async Task GetProductsAsync()
+        {
+            var storageProducts = await _localStorage.GetItemAsync<List<ProductDto>>("products");
+
+            if (storageProducts == null)
+                await SetProductsAsync(products);
+            else
+                products = storageProducts;
+        }
+
+        public async Task SetProductsAsync(List<ProductDto> products)
+        {
+            await _localStorage.SetItemAsync("products", products);
+        }
+
+        public async Task GetOrderAsync()
+        {
+            var storageOrder = await _localStorage.GetItemAsync<OrderDto>("order");
+
+            if (storageOrder == null)
+                await SetOrderAsync(order);
+            else
+                order = storageOrder;
+        }
+
+        public async Task SetOrderAsync(OrderDto order)
+        {
+            await _localStorage.SetItemAsync("order", order);
         }
     }
 }

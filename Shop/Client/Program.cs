@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,25 +31,26 @@ namespace Shop.Client
                 .GetRequiredService<IHttpClientFactory>()
                 .CreateClient("Shop.ServerAPI"));
 
-            builder.Services.AddApiAuthorization();
+            //builder.Services.AddApiAuthorization();
 
-            //builder.Services.AddOidcAuthentication(options =>
-            //{
-            //    options.ProviderOptions.Authority = "https://demo.identityserver.io/";
-            //    options.ProviderOptions.ClientId = "interactive.public";
-            //    options.ProviderOptions.ResponseType = "code";
-            //    options.ProviderOptions.DefaultScopes.Add("api");
-            //});
+            builder.Services.AddOidcAuthentication(options =>
+            {
+                options.ProviderOptions.Authority = "https://demo.identityserver.io/";
+                options.ProviderOptions.ClientId = "interactive.public";
+                options.ProviderOptions.ResponseType = "code";
+                options.ProviderOptions.DefaultScopes.Add("api");
+            });
 
             builder.Services.AddSingleton<State>();
             builder.Services.AddSingleton<Helpers>();
 
-            builder.Services.AddScoped<IProductsDataService, ProductsDataService>();
-            builder.Services.AddScoped<IOrdersDataService, OrdersDataService>();
+            //builder.Services.AddScoped<IProductsDataService, ProductsDataService>();
+            //builder.Services.AddScoped<IOrdersDataService, OrdersDataService>();
 
-            //builder.Services.AddScoped<MockShopDbContext>();
-            //builder.Services.AddScoped<IProductsDataService, MockProductsDataService>();
-            //builder.Services.AddScoped<IOrdersDataService, MockOrdersDataService>();
+            builder.Services.AddScoped<IProductsDataService, MockProductsDataService>();
+            builder.Services.AddScoped<IOrdersDataService, MockOrdersDataService>();
+            builder.Services.AddScoped<MockShopDbContext>();
+            builder.Services.AddBlazoredLocalStorage();
 
             await builder.Build().RunAsync();
         }

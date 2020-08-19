@@ -23,13 +23,17 @@ namespace Shop.Client.Services
             res = new HttpResponseMessage();
         }
 
-        public Task<OrderDto> GetOrder(string name)
+        public async Task<OrderDto> GetOrder(string name)
         {
+            await _context.GetProductsAsync();
+            await _context.GetOrderAsync();
+
             _context.order.Email = name;
-            return Task.FromResult<OrderDto>(_context.order);
+
+            return _context.order;
         }
 
-        public Task<HttpResponseMessage> AddOrder(OrderChangeDto order)
+        public async Task<HttpResponseMessage> AddOrder(OrderChangeDto order)
         {
             var email = _context.order.Email;
 
@@ -44,6 +48,8 @@ namespace Shop.Client.Services
                 OrderItems = new List<OrderItemDto>()
             };
 
+            await _context.SetOrderAsync(_context.order);
+
             var jsonString = new StringContent(
                 JsonSerializer.Serialize<OrderDto>(_context.order),
                 Encoding.UTF8,
@@ -55,23 +61,25 @@ namespace Shop.Client.Services
                 Content = jsonString
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
-        public Task<HttpResponseMessage> UpdateOrder(int id, OrderChangeDto order)
+        public async Task<HttpResponseMessage> UpdateOrder(int id, OrderChangeDto order)
         {
             _context.order.Address = order.Address;
             _context.order.Phone = order.Phone;
             _context.order.Status = order.Status;
+
+            await _context.SetOrderAsync(_context.order);
 
             res = new HttpResponseMessage()
             {
                 StatusCode = System.Net.HttpStatusCode.NoContent
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
 
-        public Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto item)
+        public async Task<HttpResponseMessage> AddOrderItem(OrderItemChangeDto item)
         {
             var i = JsonSerializer.Deserialize<OrderItemDto>(
                     JsonSerializer.Serialize<OrderItemChangeDto>(item));
@@ -101,6 +109,8 @@ namespace Shop.Client.Services
 
             CalculateTotal(_context.order);
 
+            await _context.SetOrderAsync(_context.order);
+
             var jsonString = new StringContent(
                 JsonSerializer.Serialize<OrderDto>(_context.order),
                 Encoding.UTF8,
@@ -112,10 +122,10 @@ namespace Shop.Client.Services
                 Content = jsonString
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
 
-        public Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto item)
+        public async Task<HttpResponseMessage> UpdateOrderItem(int id, OrderItemChangeDto item)
         {
             var i = _context.order.OrderItems
                 .Where(o => o.ProductId == item.ProductId)
@@ -126,27 +136,31 @@ namespace Shop.Client.Services
 
             CalculateTotal(_context.order);
 
+            await _context.SetOrderAsync(_context.order);
+
             res = new HttpResponseMessage()
             {
                 StatusCode = System.Net.HttpStatusCode.NoContent
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
 
-        public Task<HttpResponseMessage> DeleteOrderItem(int id)
+        public async Task<HttpResponseMessage> DeleteOrderItem(int id)
         {
             var item = _context.order.OrderItems.Where(p => p.Id == id).FirstOrDefault();
 
             _context.order.Total -= item.Price;
             _context.order.OrderItems.Remove(item);
 
+            await _context.SetOrderAsync(_context.order);
+
             res = new HttpResponseMessage()
             {
                 StatusCode = System.Net.HttpStatusCode.NoContent
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
 
         // Calculate the total

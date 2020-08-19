@@ -28,9 +28,11 @@ namespace Shop.Client.Services
             res = new HttpResponseMessage();
         }
 
-        public Task<IEnumerable<ProductDto>> GetProducts()
+        public async Task<IEnumerable<ProductDto>> GetProducts()
         {
-            return Task.FromResult<IEnumerable<ProductDto>>(_context.products);
+            await _context.GetProductsAsync();
+
+            return _context.products;
         }
 
         public Task<IEnumerable<ProductDto>> GetProducts(ProductRouteParams p)
@@ -61,7 +63,7 @@ namespace Shop.Client.Services
                     JsonSerializer.Serialize<ProductDto>(product)));
         }
 
-        public Task<HttpResponseMessage> AddProduct(ProductChangeDto product)
+        public async Task<HttpResponseMessage> AddProduct(ProductChangeDto product)
         {
             var p = JsonSerializer.Deserialize<ProductDto>(
                     JsonSerializer.Serialize<ProductChangeDto>(product));
@@ -69,6 +71,8 @@ namespace Shop.Client.Services
             p.Id = _context.products.Count + 1;
 
             _context.products.Add(p);
+
+            await _context.SetProductsAsync(_context.products);
 
             var jsonString = new StringContent(
                 JsonSerializer.Serialize<ProductDto>(p),
@@ -81,10 +85,10 @@ namespace Shop.Client.Services
                 Content = jsonString
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
 
-        public Task<HttpResponseMessage> UpdateProduct(int id, ProductChangeDto product)
+        public async Task<HttpResponseMessage> UpdateProduct(int id, ProductChangeDto product)
         {
             var p = _context.products.Where(p => p.Id == id).FirstOrDefault();
 
@@ -92,6 +96,8 @@ namespace Shop.Client.Services
             p.Description = product.Description;
             p.Price = product.Price;
             p.InStock = product.InStock;
+
+            await _context.SetProductsAsync(_context.products);
 
             var item = _context.order.OrderItems
                         .Where(o => o.ProductId == p.Id)
@@ -102,26 +108,31 @@ namespace Shop.Client.Services
                 var newPrice = item.Amount * product.Price;
                 _context.order.Total = _context.order.Total - item.Price + newPrice;
                 item.Price = newPrice;
+                item.Product = p;
             }
+
+            await _context.SetOrderAsync(_context.order);
 
             res = new HttpResponseMessage()
             {
                 StatusCode = System.Net.HttpStatusCode.NoContent
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
 
-        public Task<HttpResponseMessage> DeleteProduct(int id)
+        public async Task<HttpResponseMessage> DeleteProduct(int id)
         {
             _context.products = _context.products.Where(p => p.Id != id).ToList();
 
+            await _context.SetProductsAsync(_context.products);
+
             res = new HttpResponseMessage()
             {
                 StatusCode = System.Net.HttpStatusCode.NoContent
             };
 
-            return Task.FromResult<HttpResponseMessage>(res);
+            return res;
         }
     }
 }
